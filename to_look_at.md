@@ -6,7 +6,7 @@ Dash memoization from docs
 Chained callbacks
 SciKit-Bio
 Plotly - graph styling templates
-
+https://plotly.com/python-api-reference/ (complete documentation)
 
 
 

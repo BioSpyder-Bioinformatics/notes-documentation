@@ -17,10 +17,10 @@
 	+ dash.html.components (HTML) -> structural elements such as headings and dividers to style and position elements on the page
 	+ dash.core.components (DCC) -> for core app functionality, includes input fields and figures
 	+ Actually there are the bootstrap components too but I'd rather not rely on external libraries for styling
-- Variables and DFs declared outside a function are global!
+- Variables and DFs declared outside a function are global! It's better to store data in dash core component Storage!!!
 - The layout of the app refers to the alignment of the components. The style refers to how the element look, also known as *props*
 - Dash can render _cytoscape_, a js library for rendering complex graphs. It can also render VTK for 3D graphs
-
+- Depending on the type of data required we can use `pandas_datareader` to download from API and have it in DF format directly
 
 --------------------------------------------------
 
@@ -99,6 +99,47 @@ Prebuilt components to interact with the app
 		* value -> represents the default value the dropdown will take on boot
 
 
+- dcc.RangeSlider(`id='x', min=2000, max=2010, step=1, value=[2002, 2004], marks={2005:'2005', 2006:'06', 2007:'07', ...}`)
+	+ Component that allows to select a range of values instead of discrete only
+	+ Main props are id, min, max, step, value, marks
+		* id
+		* min/max -> minimum and maximum value displayed on the slider
+		* step -> unit of increment
+		* value -> list of currently selected values range
+		* marks -> label per value in dict form
+			- Extra
+				+ allowCross=True (default:false) -> Allows slider handles to cross each other. Set true just for user experience, doesn't change overall functionality
+
+
+*!!!!!!!!!!!!!*
+- dcc.Store(`id='x', storage_type='local', data={}`)
+	+ Component used to save dashboard data in memory, so that it can be recalled quickly and efficiently between callbacks. Store is invisible but has to still be declared in the layout section. Limited to 2MB in mobile and 5 to 10MB in desktop only application.
+	+ Main props are id, storage_type and data
+		* id
+		* storage_type -> how we want to store the data: 'session', 'local' or 'memory'. 'session' retains data until the browser tab is closed; 'local' saves the data to the broser until all browing history and cookies are deleted; 'memory' reset data when browser is refreshed.
+		* data -> can be dict, list, integer, string or bool. It is not necessary to declare it on instantiation.
+
+
+- dcc.Interval(`id='x', interval=100, n_intervals=0`)
+	+ Component used to automatically update the app without having to refresh the page manually. Typically used with apps that use real-time data
+	+ Main props are id, interval and n_intervals
+		* id
+		* interval -> time in ms between refreshes
+		* n_intervals -> counts the number of refreshes done, increasing +1 for each. Very very useful for the callback function (as you pass the prop n_intervals as input, and every time it refreshes, the callback is called)
+			- ex. `@app.callback(Output('storage', 'data'), Input('timer', 'n_intervals'))`
+		* max_intervals -> maximum number of refreshes allowed
+
+
+
+
+## Dash Bootstrap Components (DBC)
+`import dash_bootstrap_components as dbc` -> requires pip installation
+
+DBC is a package that helps with the layout of the app, giving pre-styled bootstrap components. It's useful but in the long run it causes problems, I'd rather not use it and create a custom CSS for the company to use
+
+This package has several components similar to the dash HTML components, but they work better between them. Pretty much pick one or the other, you're going to have compatibility issues if you mix.
+
+
 
 
 
@@ -112,6 +153,7 @@ Prebuilt components to interact with the app
 Callbacks allow user interactivity within the app. It's the mechanism that connects the Dash components to each other (eg once user selects dropdown value, thje figure is updated).
 Callbacks are composed of two parts: decorator (identifies the relevant components for the action) and callback function (defines how dash components should interact)
 The callback structure can be analysed with the development tools on the webapp page, the blue '<>' button. This is only available in debug mode (debug=True), remember to remove when deploying!!
+
 
 
 
@@ -144,6 +186,19 @@ No need for an example as it's literally a function. _Just be careful about_ not
 
 
 
+## Block callback triggering
+By default, all callbacks are triggered when the app starts. To stop this behaviour (for example for callbacks that produce graphs, even if the DF is not loaded), there are 2 ways:
+- prevent_initial_callbacks=True -> in the Dash() declaration (applies to all I suppose)
+	+ app = Dash(`__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], prevent_initial_callbacks=True`)
+- prevent_initial_call=True -> in specific callback (applies only to the callback where it's added)
+	+ @app.callback(`Output("storage", "data"), Input("timer", "n_intervals"), prevent_initial_call=True`)
+
+
+
+
+
+
+
 
 
 ---------------------------
@@ -151,19 +206,50 @@ No need for an example as it's literally a function. _Just be careful about_ not
 # Plotly Express
 Plotly express is a high level interface for creation of graphs. This is the 'easier' version of plotly, with, as trade-off, a lower level of customisability.
 
-Plotly requires the data to be formatted with pandas' DataFrames
+Plotly requires the data to be formatted with pandas' DataFrames, or in a format interpretable by pandas. For ease every time there's written DF it refers to a Pandas' DataFrame (or data convertible to it), and DF columns refer to the strings composing the DF's columns names OR array/Series-like objects which can hold the same function
 
 
 ### Line graphs
 Line graphs are among the easiest graphs. The three main props required are 'data_frame', 'x' and 'y' (specify which columns plot and in which axis). 
 `plotly.express.line(data_frame=df, x='axis_name', y='axis_name'`
-Other intersting props include:
-- Aesthetic props
-	+ title - width/height (in px) - 
+
+These are all the props for this graph, some of them might be useful, I'll do a better breakdown of what each one controls later on!:
+
+```py
+plotly.express.line(data_frame=None, x=None, y=None, 
+	title=None, # Title of the figure
+	template=None, #Figure template name, search more in plotly site
+	labels={}, # Rename DF columns to be displayed with better form. Takes in a dict in format {'col_name':'New label'}
+	text=None, # Column name. Values from this column appear in the figure as text labels
+	error_x=None, error_y=None, # Column name. Used to size x/y-axis error bars in the positive direction
+	error_x_minus=None, error_y_minus=None,  # Column name. Used to size x/y-axis error bars in the negative direction
+	orientation=None, # String. 'h' for horizontal, 'v' for vertical (def 'v')
+	color=None, # Categorical column name. Differentiate groups of data with colour based on category
+	color_discrete_sequence=None, # List of strings. Strings fo valid CSS colours. When prop color is set, colour values are assigned by cycling through the ones listed in this prop (if category orders is set it'll follow that order)
+	color_discrete_map={}, # Dictionary {'values_of_color(prop)_column': 'color value'}. Assign directly colours to the categories
+	line_dash=None, # Column name. Values are used to assign dash-patterns to lines
+	line_dash_sequence=None, # List of strings. Strings defining valud plotly dash patterns. When line_dash is set, the dash-patterns are assigned by cycling though this list (if category_orders is set, it'll follow that order) 
+	line_dash_map={}, # Dictionary {'values_of_line_dash(prop)_column': dash_pattern}. Map dash patterns directly to the categorical variable.
+	range_x=None, range_y=None, # List of two numbers. Overrides auto scaling and sets min and max value to be displayed
+	line_shape=None, # String. Either 'linear'(default) or 'spline' (?) 
+	render_mode='auto', # String. Either 'auto' (default), 'svg', 'webgl'. 'svg' for imgs with <1000 data points. 'webgl' >1000 data points. 'auto' picks between one of the other two modes
+	category_orders={}, # Used to forcefully order categorical values in columns. Takes in dictionary in form of {'col_name': ['list', 'of', 'values', 'in', 'desired', 'order']}
+	width=None, height=None, # max dimensional values for graph in px
+	log_x=False, log_y=False, # Present axis in a logarithmic scale (log10 by default can be personalised with more complex graph objects)
+	hover_name=None, # Column name. Values in column will appear in bold in the hover tooltip
+	hover_data=None, # List of column names or dictionary with column names as keys and True or formatting string (ex 3f) or list like data. Dictates what extra data will be presented on hover. Example hover_data=['column_name']
+	custom_data=None, # Names of columns or array-like objects. These are extra meta data not visible to the user, but included in events emitted by the figure 
+	line_group=None, # Column name. Column values are used to group rows of data into lines (??)
+	facet_row=None, facet_col=None, # Column name. Values are used to assign marks to faccetted subplots in the vertical/horizontal direction respectively
+	facet_col_wrap=0, # Integer. Maximum number of facet columns. Ignored if 0
+	facet_row_spacing=None, facet_col_spacing=None, # Float 0<x<1. Spacing between facet rows, in paper units (???). Defaults, row:0.03, col:0.02
+	animation_frame=None, # Column name. Values are used to assign marks to animation frames
+	animation_group=None # Column name. Values are used to provide constancy across animation frames; rows with same animation_group are treated as if they describe the same object (???)
+	)
 
 
 
-
+```
 
 
 
