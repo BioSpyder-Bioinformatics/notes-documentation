@@ -149,7 +149,17 @@ No need for an example as it's literally a function. _Just be careful about_ not
 ---------------------------
 
 # Plotly Express
+Plotly express is a high level interface for creation of graphs. This is the 'easier' version of plotly, with, as trade-off, a lower level of customisability.
 
+Plotly requires the data to be formatted with pandas' DataFrames
+
+
+### Line graphs
+Line graphs are among the easiest graphs. The three main props required are 'data_frame', 'x' and 'y' (specify which columns plot and in which axis). 
+`plotly.express.line(data_frame=df, x='axis_name', y='axis_name'`
+Other intersting props include:
+- Aesthetic props
+	+ title - width/height (in px) - 
 
 
 
