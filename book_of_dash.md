@@ -176,6 +176,21 @@ ex. Select dropdown element to produce a new chart
 ```
 
 
+#### State in callback decorator - Multiple inputs
+When creating a complex graph, this might require several inputs from different components. For example the following callback:
+```py
+@app.callback( 
+	Output("my-choropleth", "figure"), 
+	Input("my-button", "n_clicks"), 
+	Input("storage", "data"), 
+	State("years-range", "value"), 
+	State("radio-indicator", "value"),
+)
+```
+The callback outputs a graph in the 'figure' prop of 'my-choropleth'; to do this it requires the input of the button, or the refresh of the data in the storage. In order to capture other data, such as the range of years to display, or which values from the radio selection to include, we use the 'State' instead of 'Input'. The 'State' doesn't trigger the callback when its components are altered, but keeps track of the user's selection. When the callback is then triggered by one of the inputs, the callback function can have access to the value of the two other components represented in the state!
+
+
+
 
 ## Callback function
 The callback function is what handles the 'event' registered by the callback decorator. It takes in as many inputs as given, and returns as many objects as required, following the order of input/return.
@@ -192,6 +207,10 @@ By default, all callbacks are triggered when the app starts. To stop this behavi
 	+ app = Dash(`__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], prevent_initial_callbacks=True`)
 - prevent_initial_call=True -> in specific callback (applies only to the callback where it's added)
 	+ @app.callback(`Output("storage", "data"), Input("timer", "n_intervals"), prevent_initial_call=True`)
+
+
+
+
 
 
 
@@ -341,7 +360,7 @@ plotly.express.line(data_frame=None, x=None, y=None,
 
 
 
-
+Callback diagram page 125
 
 
 
