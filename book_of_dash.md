@@ -76,6 +76,8 @@ Many more in https://dash.plotly.com/dash-core-components
 			- children -> regular children prop
 			- href -> link destination
 			- target -> if `_self` the link opens in the same tab, if `_blank` in a new one
+- html.Tooltip()
+	+ Look this up, nice touch!
 
 
 
@@ -131,6 +133,12 @@ Prebuilt components to interact with the app
 
 
 
+## Dash Data Table
+!!!Dash has a component specific for viewing, editing and exploring datasets. It pretty much allows for live interactions with the pandas DFs. Very very interesting, need to have a look at the documentation as it has a lot of options
+
+
+
+
 
 ## Dash Bootstrap Components (DBC)
 `import dash_bootstrap_components as dbc` -> requires pip installation
@@ -139,7 +147,21 @@ DBC is a package that helps with the layout of the app, giving pre-styled bootst
 
 This package has several components similar to the dash HTML components, but they work better between them. Pretty much pick one or the other, you're going to have compatibility issues if you mix.
 
+DBC also offers the FontAwesome library, which has an extensive collection of icons (still don't think is worth)
 
+*These components are presented as DBCs, look up the corresponding DCC/HTML*
+- dbc.Tabs -> encloses many -> dbc.Tab -> which enclose content to display
+	+ To separate content into different panes
+- dbc.Card
+	+ Container for related content; pretty much a bordered box with options with headers, footers and other content
+- dbc.InputGroup -> encloses -> dbc.InputGroupText - dbc.Input
+	+ Combination of these components creates an input with related labels
+- !!!!!!dbc.Tooltip
+	+ Textual hints that appear when the user hovers their mouse over a component. Just specify the text to display and the Tooltip's target ID and no callback is required
+- dbc.Table 
+	+ Component to display classic HTML tables; it can contain other components such as graphs or buttons
+- dbc.Markdown
+	+ Component to display text written in markdown (makes it easier with styling) (might want to  change the CSS spacing for this)
 
 
 
@@ -152,8 +174,8 @@ This package has several components similar to the dash HTML components, but the
 # Dash Callbacks
 Callbacks allow user interactivity within the app. It's the mechanism that connects the Dash components to each other (eg once user selects dropdown value, thje figure is updated).
 Callbacks are composed of two parts: decorator (identifies the relevant components for the action) and callback function (defines how dash components should interact)
-The callback structure can be analysed with the development tools on the webapp page, the blue '<>' button. This is only available in debug mode (debug=True), remember to remove when deploying!!
-
+!!The callback structure can be analysed with the development tools on the webapp page, the blue '<>' button. This is only available in debug mode (debug=True), remember to remove when deploying!!
+!! The callback declaration order matters only for callbacks dependent on each other (chained callbacks). In this case, the callback that has to be triggered first should be written above any callbacks depending on it. In the same way, we place callbacks storing data above the ones used to plot figures.
 
 
 
@@ -222,6 +244,10 @@ By default, all callbacks are triggered when the app starts. To stop this behavi
 
 ---------------------------
 
+# Plotly
+API documentation reference for both Express and Graph Object -> https://plotly.com/python-api-reference/
+
+
 # Plotly Express
 Plotly express is a high level interface for creation of graphs. This is the 'easier' version of plotly, with, as trade-off, a lower level of customisability.
 
@@ -275,6 +301,12 @@ plotly.express.line(data_frame=None, x=None, y=None,
 
 
 
+### Choropleth maps
+A choropleth map represents quantitative daat in shades and colors over a map. Very useful to visualise concentrations/values in areas. Not too sure will be useful for the dashboard. This is the manual link for reference https://plotly.com/python/reference/choropleth/.
+
+
+
+###
 
 
 
@@ -284,14 +316,93 @@ plotly.express.line(data_frame=None, x=None, y=None,
 
 
 
+# Plotly Graph Objects
+Graph objects are low level classes that allow for full customisation of the graphs
+
+
+### Pie Chart Graph Object
+This is an example of how to make a function for creating a fully customised and reusable pie chart using Graph Object elements. The pie chart will change based on the slider input.
+Pretty much you create a figure wrapper, with inside the wrapper specific to the graph we want. Set all the values required for the graph, then change layout of figure wrapper to style and include metadata you want. 
+This is very specific to the graph made, I'd recommend you look at the documentation for each graph (API docs linked above) 
+
+```py
+
+def make_pie(slider_input, title):
+	fig = go.Figure(
+		data=[
+			go.Pie(
+				labels=['Cash', 'Bonds', 'Stocks'],
+				values=slider_input,
+				textinfo='label+percent',
+				textposition='inside',
+				marker={'colors':['000', '111', '222']},
+				sort=False,
+				hoverinfo='none'
+				)
+			]
+		)
+
+	fig.update_layout(
+		title_text=title,
+		title_x=0.5,
+		margin=dict(b=25, t=75, l=35, r=25),
+		height=325,
+		paper_bgcolor='000'
+		)
+
+	return fig
+```
 
 
 
+### Line Chart Graph Object
+Another example for graph objects. In here, the parameter add_trace gets modified to allow line customisation in the chart (would be less verbose than do it in a express graph object)
 
+```py
+def make_line_chart(dff):
+	#variables
+	start = dff.loc[1, "Year"]
+	yrs = dff["Year"].size - 1
+	dtick = 1 if yrs <16 else 2 if yrs in range(16, 30) else 5
+	
 
+	fig = go.Figure() 
+	
+	# Each trace has to be added separately 	
+	fig.add_trace(
+		go.Scatter( 
+			x=dff["Year"], 
+			y=dff["all_cash"],
+			name="All Cash",
+			marker_color=COLORS["cash"], #this is a pre-declare RGB variable
+		)
+	) 
+	
+	fig.add_trace(
+		go.Scatter(
+			x=dff["Year"], 
+			y=dff["all_bonds"],
+			name="All Bonds (10yr T.Bonds)", 
+			marker_color=COLORS["bonds"],
+		) 
+	)
 
+	# For brevity, the traces for "All Stocks", "My Portfolio", and "Inflation" are excluded
 
+	fig.update_layout(
+		title=f"Returns for {yrs} years starting {start}", 
+		template="none",
+		showlegend=True,
+		legend=dict(x=0.01, y=0.99),
+		height=400,
+		margin=dict(l=40, r=10, t=60, b=55), 
+		yaxis=dict(tickprefix="$", fixedrange=True), 
+		xaxis=dict(title="Year Ended", fixedrange=True, dtick=dtick),
+	)
+	
+	return fig
 
+```
 
 
 
