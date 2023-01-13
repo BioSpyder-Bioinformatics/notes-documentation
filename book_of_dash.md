@@ -54,6 +54,10 @@ app = Dash(__name__, external_stylesheets=stylesheets)
 
 
 
+
+
+
+
 --------------------------------------------------
 
 
@@ -434,13 +438,23 @@ def make_line_chart(dff):
 
 ```
 
+ 
 
 
 
 
 
+-----------------------
 
+# File breakdown for larger projects
 
+- app.py
+- utils/
+	+ dash_reusable_components.py (example buttons, dropdowns etc)
+	+ figures.py
+- assets/
+	+ base_styles.css
+	+ custom_styles.css
 
 
 
@@ -489,6 +503,8 @@ def make_line_chart(dff):
 
 
 
+# Dashboard integrating a real-time ML model (SVM)
+https://github.com/DashBookProject/Plotly-Dash/tree/master/Chapter-7/dash-svm
 
 
 
@@ -501,7 +517,6 @@ def make_line_chart(dff):
 
 
 
-Callback diagram page 125
 
 
 
@@ -546,5 +561,10 @@ Callback diagram page 125
 
 
 
+
+
+
+
+Continue in page 181 - Styling
 
 
