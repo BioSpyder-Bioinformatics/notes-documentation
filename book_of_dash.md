@@ -232,6 +232,36 @@ By default, all callbacks are triggered when the app starts. To stop this behavi
 
 
 
+## Circular callbacks and Synchronising components
+Circular callbacks are used to synchronise components. For example, the user can set a value either by typing it or moving a slider handle, it's necessary for these two elements to be synchronised, and require therefore a circular callback. The structure of these callbacks is very simple, having each element as input AND output.
+
+```py
+@app.callback( 
+	Output("planning_time", "value"), 
+	Output("start_yr", "value"), 
+	Output("time_period", "value"), 
+	Input("planning_time", "value"), 
+	Input("start_yr", "value"), 
+	Input("time_period", "value"),
+)
+```
+The callback function has a Dash Callback Function specific variable called `callback_context` that informs the user on which of the three inputs triggered the callback. It has an attribute `triggered`, which is a list of changed properties; we can parse the list to find the `id` of the triggering input, thus updating the elements which were not part of the input.
+
+```py
+def update_time_period(planning_time, start_yr, period_number): 
+	" ""syncs inputs and selected time periods" ""
+	ctx = callback_context
+	input_id = ctx.triggered[0]["prop_id"].split(".")[0]
+	if input_id == "time_period":
+		planning_time = time_period_data[period_number]["planning_time"]
+		start_yr = time_period_data[period_number]["start_yr"]
+	if input_id in ["planning_time", "start_yr"]: 
+		period_number = None
+	return planning_time, start_yr, period_number
+```
+
+
+
 
 
 
