@@ -35,13 +35,34 @@ There are the options to
 				+ Each column receives the same index 1 (eg A1, B1, C1)
 				+ Each row receives the same index 2 (eg A1, A2, A3), this allows to have a unique combination across all the plate
 
+!Have a look for the Illumina tool Salvo mentioned to double check sample sheets!!
 
+!Edit straight on web page, with automated checks on input (but for later on)
+
+Ability to upload different files formats eg
+- Generic
+	+ CSV
+- Propietary 
+	+ xlsx (excel)
+- Non-propietary
+	+ ods (excel-like)
+	+ This is mainly if we decide to append a second sheet with metadata to the original sample sheet. In this case we need a workaround for CSV uploads (will be later on)
+	
+Given that the number of indexes will grow in the future, set this up to have 8 96-wells plate at the time instead of only 4
 
 
 
 # Count table
 Table showing the counts (signal levels) for each probe, *in* each sample. This is what is used for the analysis
 This is the result of alignment of the produced FastQ to a reference table. It displays the amount of reads mapped to a particular probe for each sample.
+
+When displaying the count table:
+- Add filters (radio/checkbox buttons) to isolate expression of specific groups/genes
+	+ Allow for inserting comma separated list of genes/samples of interest
+	+ Filter table by
+		* Average read count
+		* Normalised read count eg count per million
+	+ Ability to download the table with this specific filtering
 
 
 
@@ -83,12 +104,24 @@ This is a double upload window asking for the count table and Sample sheet. Samp
 *QC Tools*
 For all graphs you need to allow to select a subset of data to be plotted (Also doublecheck how to do in graph selection). 
 For all graphs and tables you need to allow for download and selection download
+_For graphs/statistics_ select samples with checkboxes or even better side by side list that allow you to swop elements between them
+
 
 _Display Count Table_
 (So that user can have a look at the table straight on the app. This requires a search function or something)
 
 _Sample statistics_
 Displays the total mapped reads, average reads per probe and sample type. Here user can specify positive and negative controls
+Other parameters useful for the analysis include:
+- P80
+	+ Metric describing number of probes required to capture 80% of change in expression. This is useful as QC tool in case number of probes required vary too much between samples (could be given by sequencing depth - required adjustments in attenuation etc)
+- Number of detected genes
+- Number of probes with at least count 1
+	+ This is mainly for single cell
+- Statistics by group
+	+ eg pos-neg-control-group x/y/z
+	+ Useful for mediating depth difference between samples
+
 
 _Barplot_
 Shows number of reads per sample
@@ -103,6 +136,18 @@ _PCA_
 Shows clustering of samples based on similarity. This plot is also offered in 3D (when 3 PC are selected)
 Samples with same labels need to be displayed with the same color. (Labels are given in the column 'description' of the sample sheet. Maybe add option to label dynamically online)
 Need to understand how to extract PC metadata to determine components
+
+
+_Boxplot_
+Boxplots repressenting the number of genes. Useful to be able to colour boxes based on group, plus add statistics on hover (maybe checkboxes for user to select which metrics they're interested to see on hover)
+
+
+_Dendrogram_
+Have a look for some fancy template. Having a circular dendrogram would be better
+
+
+
+
 
 
 
