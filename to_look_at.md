@@ -1,7 +1,6 @@
 
 # Dash related
 Dash cytoscape from the documentation
-Run R packages in Python (for DeSeq2)
 Dash memoization from docs
 Chained callbacks
 SciKit-Bio
@@ -13,6 +12,8 @@ https://github.com/DashBookProject/Plotly-Dash/tree/master/Chapter-7/dash-svm (p
 
 
 # Other
+Run aligners on Windows (BWA/Callisto/Bowtie)
+Run R packages in Python (for DeSeq2)
 BMD Express 2
 
 
