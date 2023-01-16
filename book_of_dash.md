@@ -8,6 +8,7 @@
 - Dynamic attribute: Object attribute defined dynamically during program execution
 - Instance attribute: Variable that holds data belonging ot only a single object
 - Inheritance: Concept that allows you to create new classes as modifications of existing classes by reusing some or all the data in new class
+- Wrapper: A function whose only purpose is to call another function. This is done to shield the caller from unnecessary complexity or redundancy. Ex. the wrapper function hardcodes some variables for the inner and more complex function so not to have to type them each time we call it
 
 
 
@@ -21,6 +22,7 @@
 - The layout of the app refers to the alignment of the components. The style refers to how the element look, also known as *props*
 - Dash can render _cytoscape_, a js library for rendering complex graphs. It can also render VTK for 3D graphs
 - Depending on the type of data required we can use `pandas_datareader` to download from API and have it in DF format directly
+- Dashboard integrating a real-time ML model (SVM) (https://github.com/DashBookProject/Plotly-Dash/tree/master/Chapter-7/dash-svm)
 
 --------------------------------------------------
 
@@ -166,6 +168,11 @@ DBC also offers the FontAwesome library, which has an extensive collection of ic
 	+ Component to display classic HTML tables; it can contain other components such as graphs or buttons
 - dbc.Markdown
 	+ Component to display text written in markdown (makes it easier with styling) (might want to  change the CSS spacing for this)
+
+
+
+
+
 
 
 
@@ -464,6 +471,84 @@ def make_line_chart(dff):
 
 
 
+--------------------------------
+
+# Structuring Reusable Components
+Very useful to do when repeating the content of some components multiple times throughout the code
+
+*Example*, defining a card with inside a label, slider and a button to be reused throughout the code
+```py
+def Card(children, **kwargs):
+	return html.Section(className='card', children=children, **_omit(['style'], kwargs))
+```
+Elements breakdown:
+- *children*: A list of Dash elements to be included in the card and displayed together.
+- *`**kwargs`*: Arbitrary keyword arguments. It kwargs packs all the keyword arguments into a single dictionary. 
+- *`_omit`*: Function. `_omit` allows us to exclude certain elements if not needed. In this case, it shields the kwargs from containing the 'style' section, given that we already declared in with the CSS stylesheets and we don't want anyone playing around with it. 
+
+`_omit` was actually declared as helper function and does not come by default, declaration:
+```py
+def _omit(omitted_keys, d):
+	return {k:v for k, v in d.items() if k not in omitted_keys}
+```
+
+
+
+*Structure of a Slider for reference*
+```py
+def FormattedSlider(**kwargs):
+	return html.Div(
+		style=kwargs.get('style', {}), #get style, return empty dict if none
+		children=dcc.Slider(**_omit(['style'], kwargs))
+		)
+
+```
+
+
+
+### Structuring ad-hoc graphs
+In the book they structure a graph to show the plotted lines of the SVM model. Given that there are several elements to be plotted, you need to add layers on a plot image such that:
+(This is just a trace, for full guide: https://plotly.com/python/contour-plots/)
+```py
+import plotly.graph_objects as go
+
+def make_prediction_plot(...):
+	#Create all plot components
+
+	#Plot the prediction contour of the SVM
+	trace0 = go.Contour(
+			...
+		)
+
+	#In the same way, plot threshold (Contour), training data (Scatter), and layout (Layout), then stack everything together
+
+	data = [trace0, trace1, trace2, trace3]
+	figure = go.Figure(data=data, layout=layout)
+
+	return figure
+```
+
+
+
+
+
+
+----------------
+
+# Display loading
+There is a dash core component called dcc.Loading that allows you to display a loading bar while the graph you want to display is computing. A basic example is:
+
+```py
+loader = dcc.Loader(
+	className='graph-wrapper',
+	children=dcc.Graph(id='graph-of-interest', figure=figure),
+	style={'display':'none'}
+	)
+```
+Arguments:
+- className -> useful mainly for the CSS
+- children -> this is the graph that is meant to be shown upon loading. It has to be wrapped by the loader component!
+- style -> (really not sure why they added display none, which is meant to hide the component. In the book they say that this is overwritten with display flex by the stylesheet, so this would be useless)
 
 
 
@@ -477,34 +562,6 @@ def make_line_chart(dff):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Dashboard integrating a real-time ML model (SVM)
-https://github.com/DashBookProject/Plotly-Dash/tree/master/Chapter-7/dash-svm
 
 
 
