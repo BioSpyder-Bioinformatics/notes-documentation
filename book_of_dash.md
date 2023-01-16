@@ -23,6 +23,14 @@
 - Dash can render _cytoscape_, a js library for rendering complex graphs. It can also render VTK for 3D graphs
 - Depending on the type of data required we can use `pandas_datareader` to download from API and have it in DF format directly
 - Dashboard integrating a real-time ML model (SVM) (https://github.com/DashBookProject/Plotly-Dash/tree/master/Chapter-7/dash-svm)
+- Dash Gallery with plenty of _*examples!!!*_ https://dash.gallery/Portal/
+- Plotly community https://community.plotly.com
+- Dash development repo https://github.com/plotly/dash-labs (not safe for production as not supported, but with nice ideas)
+- Use Black to auto format files! (pip install black -> black filename.py)
+- Dash co-author youtube channel (VERY useful) https://www.youtube.com/c/CharmingData
+	+ Associated GitHub repo https://github.com/Coding-with-Adam/Dash-by-Plotly
+- !!! Community made components: https://community.plotly.com/t/community-components-index/60098 (it also include graphs)
+
 
 --------------------------------------------------
 
@@ -53,7 +61,12 @@ app = Dash(__name__, external_stylesheets=stylesheets)
 	+ For n between one and twelve (written in letters). Allows to decide how many 'columns' should this component occupy out of 12 (do not exceed 12 columns total as each occupies 1/12% of monitor) `className = 'four columns'`
 
 
-
+### !!!!! Style on condition
+You can give a condition to a style element by doing:
+```py
+'background-color': ['green', 'red'][content < 0]
+# green if < 0, else red 
+```
 
 
 
@@ -66,6 +79,7 @@ app = Dash(__name__, external_stylesheets=stylesheets)
 
 # Useful components
 Many more in https://dash.plotly.com/dash-core-components
+Community made components: https://community.plotly.com/t/community-components-index/60098
 
 
 ## Useful HTML components
@@ -169,7 +183,8 @@ DBC also offers the FontAwesome library, which has an extensive collection of ic
 - dbc.Markdown
 	+ Component to display text written in markdown (makes it easier with styling) (might want to  change the CSS spacing for this)
 
-
+*Check out all the pre-made bootstrap themes for dash at* https://hellodash.pythonanywhere.com 
+Graphs need to have the template prop assigned (template='vapor'), as well as className='dbc' for the theme to apply
 
 
 
@@ -287,6 +302,7 @@ def update_time_period(planning_time, start_yr, period_number):
 
 # Plotly
 API documentation reference for both Express and Graph Object -> https://plotly.com/python-api-reference/
+*Check out plotly theme templates* to assign colours and stuff only once 
 
 
 # Plotly Express
@@ -343,13 +359,7 @@ plotly.express.line(data_frame=None, x=None, y=None,
 
 
 ### Choropleth maps
-A choropleth map represents quantitative daat in shades and colors over a map. Very useful to visualise concentrations/values in areas. Not too sure will be useful for the dashboard. This is the manual link for reference https://plotly.com/python/reference/choropleth/.
-
-
-
-###
-
-
+A choropleth map represents quantitative daat in shades and colors over a map. Very useful to visualise concentrations/values in areas. Not too sure will be useful for the dashboard. This is the manual link for reference https://plotly.com/python/reference/choropleth/
 
 
 
@@ -446,6 +456,12 @@ def make_line_chart(dff):
 ```
 
  
+
+## For making graphs starting with high level of inheritance, have a look at this great repo:
+https://github.com/muntakim1/dash_cute_charts, in dash_cute_charts folder you have all code for nice looking personalised graphs!!!!!
+
+
+
 
 
 
@@ -559,6 +575,29 @@ Arguments:
 
 
 
+# Debugging Dash App
+In this example they use the _*ipdb*_ package for debugging, which requires pip installation
+`pip install ipdb`
+
+In order to have an active debugger we need to add a few lines to the code
+```py
+import ipdb
+
+
+#Debugging feature is activated by calling a method *inside* the callback function
+ipdb.set_trace()
+
+
+#Turn off Dash native debugger and threading to avoid overlapping ipdb instances
+if __name__ == '__main__':
+	app.run_server(debug=False, threaded=False, port=3030)
+
+```
+
+This pretty much gives you an interactive shell for the app execution in the terminal. You can execute line by line (n=next line) and can execute commands such as print(df.head()) straight in the console while the program is executing!
+To complete program execution use 'c'
+
+Find IPDB cheatsheet in this repository. Filename 'ipdb_cheatsheet.md'
 
 
 
@@ -574,54 +613,5 @@ Arguments:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Continue in page 181 - Styling
 
 
