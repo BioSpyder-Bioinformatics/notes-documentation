@@ -101,7 +101,8 @@ CSV template, described bellow
 "Sample_ID","Sample_Name","Sample_Plate","Sample_Well","I7_Index_ID","index","I5_Index_ID","index2","Sample_Project","Description"
 "1","A1","A","A01","R801","AAGACTCTT","F801","AAGGTGTTT","",""
 ```
-Breakdown:
+
+*Breakdown*
 (Section) Header
 - IEMFileVersion -> 4 
 	+ (?)
@@ -140,7 +141,40 @@ All the melted tables, with columns as:
 - Sample_Name
 	+ User-given sample names
 - Sample_Plate
-	+ User-assigned index of reference (A-D800/A-T900)
+	+ User-assigned index of reference (A-D800/A-T900)(Only letter asssigned)
+- Sample_Well
+	+ Well assigned to sample, in format RCC (row-col-col, eg. A01) 
+- I7_Index_ID
+	+ ID of I7 index in format R### (# is a number)
+- index
+	+ I7 index sequence
+- I5_Index_ID
+	+ ID of I5 index in format F###
+- index2 
+	+ I5 index sequence
+- Sample_Project
+	+ Empty by default
+- Description
+	+ Empty by default
+
+
+
+
+
+
+### HiSeq Sample Sheet
+Surprisingly this file does not have any metadata, it's exactly the same as the Data section of MiSeq. This means that user's metadata such as experiment name and description is lost. The CSV file is composed by the melted table with the columns as: (copy pasted from above)
+(The file starts with the column names so no [stuff in bracket for the machine])
+
+*Breakdown*
+(Section) Data
+All the melted tables, with columns as:
+- Sample_ID
+	+ from 1 to N
+- Sample_Name
+	+ User-given sample names
+- Sample_Plate
+	+ User-assigned index of reference (A-D800/A-T900)(Only letter asssigned)
 - Sample_Well
 	+ Well assigned to sample, in format RCC (row-col-col, eg. A01) 
 - I7_Index_ID
@@ -162,10 +196,51 @@ All the melted tables, with columns as:
 
 
 
+### NextSeq Sample Sheet
+This is almost identical to the MiSeq sample sheet, only a couple of parameters for the machine are changed (application and description in the header's data). 
+
+*Breakdown*
+(Section) Header
+- IEMFileVersion -> 4 
+- Investigator -> BioSpyder 
+- Project Name -> 
+- Experiment Name ->
+- Date -> MM/DD/YYYY
+- Workflow -> GenerateFASTQ
+- Application -> NextSeq FASTQ Only *THIS CHANGES*
+- Assay -> Nextera
+- Description -> NextSeq *THIS CHANGES*
+- Chemistry -> Amplicon
+- Additional comments -> 
+
+(Section) Manifests
+- Empty 
+
+(Section) Reads
+- 50
+
+(Section) Settings
+- CustomIndexPrimerMix -> C2
+
+(Section) Data
+All the melted tables, with columns as:
+- Sample_ID
+- Sample_Name
+- Sample_Plate
+- Sample_Well
+- I7_Index_ID
+- index
+- I5_Index_ID
+- index2 
+- Sample_Project
+- Description
 
 
 
 
+
+### MiniSeq Sample Sheet
+This is the most peculiar one, it returns a zipped file with a TSV *and* a CSV
 
 
 
@@ -189,11 +264,22 @@ All the melted tables, with columns as:
 
 # To talk about
 - Do we want to allow for the selection of more than one plate for the 24 and 48 wells plates too? (If yes we need the workaround for the indexes)
+	+ No
 
 - For the 24 well file structure - when the user has to insert the sample names, there is no enforcement for leaving the space for the pos/neg controls. Would this be the last two rows?
 
 - Does the 48 well layout run on a 96 well plate? In the sample sheet there are 48 wells for the samples and 16 extra for the controls
+- ASK GARRET IF WE NEED TO LEAVE WELLS EMPTY
 
 - For the 96 well plate, do I need to enforce leaving the last two rows empty?
 
 - Is there a difference between the 800 and 900 probes? If yes should I prompt the user to pick one or the other?
+	+ STOP USING 800 - CHECK WHICH FLAVOURS 
+
+
+
+- HiSeq sample sheet loses user's metadata
+
+
+
+
