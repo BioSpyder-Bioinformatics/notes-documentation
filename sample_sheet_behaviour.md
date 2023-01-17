@@ -166,6 +166,13 @@ All the melted tables, with columns as:
 Surprisingly this file does not have any metadata, it's exactly the same as the Data section of MiSeq. This means that user's metadata such as experiment name and description is lost. The CSV file is composed by the melted table with the columns as: (copy pasted from above)
 (The file starts with the column names so no [stuff in bracket for the machine])
 
+*CSV File Trace*
+```csv
+"Sample_ID","Sample_Name","Sample_Plate","Sample_Well","I7_Index_ID","index","I5_Index_ID","index2","Sample_Project","Description"
+"1","A1","A","A01","R801","AAGACTCTT","F801","AAGGTGTTT","",""
+"2","B1","A","B01","R801","AAGACTCTT","F803","AACTACAGC","",""
+```
+
 *Breakdown*
 (Section) Data
 All the melted tables, with columns as:
@@ -198,6 +205,33 @@ All the melted tables, with columns as:
 
 ### NextSeq Sample Sheet
 This is almost identical to the MiSeq sample sheet, only a couple of parameters for the machine are changed (application and description in the header's data). 
+
+*CSV File Trace*
+```csv
+"[Header]",""," "," "," "," "," "," "," "," "
+"IEMFileVersion","4"," "," "," "," "," "," "," "," "
+"Investigator","BioSpyder"," "," "," "," "," "," "," "," "
+"Project Name","second_project"," "," "," "," "," "," "," "," "
+"Experiment Name","second_experiment"," "," "," "," "," "," "," "," "
+"Date","01/16/2023"," "," "," "," "," "," "," "," "
+"Workflow","GenerateFASTQ"," "," "," "," "," "," "," "," "
+"Application","NextSeq FASTQ Only"," "," "," "," "," "," "," "," "
+"Assay","Nextera"," "," "," "," "," "," "," "," "
+"Description","NextSeq"," "," "," "," "," "," "," "," "
+"Chemistry","Amplicon"," "," "," "," "," "," "," "," "
+"Additional Comments","comment_sample","","","","","","","",""
+"[Manifests]",""," "," "," "," "," "," "," "," "
+"",""," "," "," "," "," "," "," "," "
+"[Reads]",""," "," "," "," "," "," "," "," "
+"50",""," "," "," "," "," "," "," "," "
+"[Settings]",""," "," "," "," "," "," "," "," "
+"CustomIndexPrimerMix","C2"," "," "," "," "," "," "," "," "
+"",""," "," "," "," "," "," "," "," "
+"[Data]",""," "," "," "," "," "," "," "," "
+"Sample_ID","Sample_Name","Sample_Plate","Sample_Well","I7_Index_ID","index","I5_Index_ID","index2","Sample_Project","Description"
+"1","A1","A","A01","R801","AAGACTCTT","F801","AAACACCTT","",""
+```
+
 
 *Breakdown*
 (Section) Header
@@ -241,16 +275,123 @@ All the melted tables, with columns as:
 
 ### MiniSeq Sample Sheet
 This is the most peculiar one, it returns a zipped file with a TSV *and* a CSV
+!!!!!!! *__BE VERY CAREFUL__*, this one uses reverse complement sequences for the I5 INDEXES
+
+###### TSV
+TSV file seems to be the same regardless of the plate size. It looks more like a manifest file, with metadata on top, and indices name and sequence after
+*Very strange*
+It gives 96 'R' indexes and only 64 'F' indexes _CHECK INDEXES WITH NEW ONES_
+
+*TSV Template*
+```tsv
+[Kit]			
+Name	BioSpyder900		
+Description	"BioSpyder, Inc. 900 series"		
+IndexStrategy	All		
+ReadType	All		
+DefaultReadLength1	50		
+DefaultReadLength2	0		
+			
+[Resources]			
+Name	Type	Format	Value
+			
+[Indices]			
+Name	Sequence	IndexReadNumber	
+R901	GTATTATTG	1	
+…
+R996	GATAGCGGA	1	
+			
+F901	AACTACAGC	2	
+…
+F964	CGCTACAAC	2	
+			
+[SupportedModules]			
+GenerateFastQWorkflow	
+```
+
+
+*TSV file breakdown*
+(Section) Kit
+- Name -> BioSpyder900
+- Description -> "BioSpyder, Inc. 900 Series"
+- IndexStrategy -> All
+- ReadType -> All
+- DefaultReadLength1 -> 50
+- DefaultReadLength2 -> 0
+
+(Section) Resources
+(all on the same line as if they were columns, but nothing under it)
+Name	Type	Format	Value
+
+(Section) Indices
+- Name -> index name (R/F###)
+- Sequence -> Actual index sequence
+- IndexReadNumber -> R sequences have 1 assigned, F sequences have 2 assigned
+
+(Section) SupportedModules
+- GenerateFastQWorkFlow
+	+ This is just there on its own
 
 
 
 
 
 
+###### CSV
+*CSV Template*
+```csv
+[Header],,,,,,
+Experiment Name,second_experiment,,,,,
+Date,01/16/2023,,,,,
+Module,GenerateFASTQ - 2.0.1,,,,,
+Workflow,GenerateFASTQ,,,,,
+Library Prep Kit,BioSpyder900,,,,,
+Chemistry,Amplicon,,,,,
+[Reads],,,,,,
+50,,,,,,
+[Settings],,,,,,
+adapter,CTGTCTCTTATACACATCT,,,,,
+[Data],,,,,,
+Sample_ID,Description,I7_Index_ID,index,I5_Index_ID,index2,Sample_Project
+A1,,R801,AAGACTCTT,F801,AAGGTGTTT,
+```
 
 
 
 
+*CSV Breakdown* (No spacing at all throughout document)
+(Section) Header
+- Experiment Name -> 
+	+ user-defined
+- Date -> 
+	+ automatic in MM/DD/YYYY format
+- Module -> GenerateFASTQ - 2.0.1
+- Workflow -> GenerateFASTQ
+- Library Prep Kit -> BioSpyder900
+- Chemistry -> Amplicon
+
+(Section) Reads
+- 50
+	+ It's just there by itself
+
+(Section) Settings
+- adapter -> CTGTCTCTTATACACATCT
+
+(Section) Data
+- Sample_ID
+	+ The ones defined by the users
+- Description
+	+ Empty by default
+- I7_Index_ID
+	+ 'R' index ID
+- index
+	+ actual index sequence
+- I5_Index_ID
+	+ THIS IS MEANT TO BE REVERSED, CHECK BETTER WHAT SEQUENCES YOURE GETTING 
+- index2
+	+ actual sequence 
+- Sample_Project
+	+ Empty by default
 
 
 
@@ -267,18 +408,26 @@ This is the most peculiar one, it returns a zipped file with a TSV *and* a CSV
 	+ No
 
 - For the 24 well file structure - when the user has to insert the sample names, there is no enforcement for leaving the space for the pos/neg controls. Would this be the last two rows?
+	+ ASK GARRET IF WE NEED TO LEAVE WELLS EMPTY
 
 - Does the 48 well layout run on a 96 well plate? In the sample sheet there are 48 wells for the samples and 16 extra for the controls
-- ASK GARRET IF WE NEED TO LEAVE WELLS EMPTY
+	+ Ask Garret
 
 - For the 96 well plate, do I need to enforce leaving the last two rows empty?
+	+ Ask Garret
 
 - Is there a difference between the 800 and 900 probes? If yes should I prompt the user to pick one or the other?
 	+ STOP USING 800 - CHECK WHICH FLAVOURS 
 
-
-
 - HiSeq sample sheet loses user's metadata
+	+ Is being discontinued, not too much of an issue
+
+- MiniSeq TSV has uneven number of R and F indexes :( 
+
+
+
+
+
 
 
 
