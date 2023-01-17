@@ -118,7 +118,43 @@ Breakdown:
 - Assay -> Nextera
 - Description -> MiSeq
 - Chemistry -> Amplicon
-	+ All these above are probably required by the NGS machinery to operate at spec
+	+ All these above are probably required by the NGS machinery to operate specific protocols
+- Additional comments -> 
+	+ User's comments
+
+(Section) Manifests
+- Empty (not sure why)
+
+(Section) Reads
+- 50
+	+ For NGSM
+
+(Section) Settings
+- CustomIndexPrimerMix -> C2
+	+ Seems to be a constant
+	
+(Section) Data
+All the melted tables, with columns as:
+- Sample_ID
+	+ from 1 to N
+- Sample_Name
+	+ User-given sample names
+- Sample_Plate
+	+ User-assigned index of reference (A-D800/A-T900)
+- Sample_Well
+	+ Well assigned to sample, in format RCC (row-col-col, eg. A01) 
+- I7_Index_ID
+	+ ID of I7 index in format R### (# is a number)
+- index
+	+ I7 index sequence
+- I5_Index_ID
+	+ ID of I5 index in format F###
+- index2 
+	+ I5 index sequence
+- Sample_Project
+	+ Empty by default
+- Description
+	+ Empty by default
 
 
 
@@ -132,3 +168,32 @@ Breakdown:
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# To talk about
+- Do we want to allow for the selection of more than one plate for the 24 and 48 wells plates too? (If yes we need the workaround for the indexes)
+
+- For the 24 well file structure - when the user has to insert the sample names, there is no enforcement for leaving the space for the pos/neg controls. Would this be the last two rows?
+
+- Does the 48 well layout run on a 96 well plate? In the sample sheet there are 48 wells for the samples and 16 extra for the controls
+
+- For the 96 well plate, do I need to enforce leaving the last two rows empty?
+
+- Is there a difference between the 800 and 900 probes? If yes should I prompt the user to pick one or the other?
