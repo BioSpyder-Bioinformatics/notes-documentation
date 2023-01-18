@@ -8,4 +8,5 @@ body{
 #mainDiv{
     background-color: aqua;
     display: flex;
+    height: 100vh;
 }
