@@ -13,7 +13,13 @@ dash.register_page(__name__, path='/')#as it is homepage
 
 #instead of returning things, we just declare the layout
 layout = html.Div(
-    dcc.Markdown('# HOMEPAGE'), 
+    [dcc.Markdown('# HOMEPAGE'),
+    html.Div('Hello there',
+    style={
+        'height':'300px',
+        'width':'90%',
+        'backgroundColor':'blue'
+    })], 
     style=style,
     className='row')
 

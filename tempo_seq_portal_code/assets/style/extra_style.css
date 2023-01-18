@@ -12,15 +12,28 @@ body{
 }
 
 #sidebarDiv{
-    width: 20%;
+    /* width: 20%; */
     height: inherit;
-    background-color: green;
+    background-color: rgb(18, 207, 18);
 }
 
 #contentDiv{
-    width: 80%;
+    /* width: 80%; */
     height: inherit;
-    background-color: red;
+    background-color: whitesmoke;
 
 }
+
+/* 
+#sidebarBtnLrg{
+    background-color: black;
+}
+
+
+
+#sidebarBtnSml{
+    background-color: blueviolet;
+} */
+
+
 

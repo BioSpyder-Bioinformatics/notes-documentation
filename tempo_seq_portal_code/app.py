@@ -15,12 +15,14 @@ app.layout = html.Div(
         #Div for sidebar (make callback to adapt these 2 styles)
         html.Div(
             SideBar(app),
-            id='sidebarDiv'
+            id='sidebarDiv',
+            style={'width':'12%'}
         ),
 
         html.Div(
             dash.page_container,
-            id='contentDiv'
+            id='contentDiv',
+            style={'width':'88%'}
         )
     ],
     id='mainDiv',
