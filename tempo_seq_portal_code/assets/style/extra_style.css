@@ -6,7 +6,21 @@ body{
 
 
 #mainDiv{
-    background-color: aqua;
+    background-color: aqua; /* REMOVE THIS; THIS IS JUST FOR DEBUGGING*/
     display: flex;
     height: 100vh;
 }
+
+#sidebarDiv{
+    width: 20%;
+    height: inherit;
+    background-color: green;
+}
+
+#contentDiv{
+    width: 80%;
+    height: inherit;
+    background-color: red;
+
+}
+

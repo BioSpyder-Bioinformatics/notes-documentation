@@ -3,9 +3,6 @@ import dash
 
 
 style = {
-    'backgroundColor': 'red',
-    'height': '100%',
-    'width': '80%'
     
 }
 
@@ -16,7 +13,7 @@ dash.register_page(__name__, path='/')#as it is homepage
 
 #instead of returning things, we just declare the layout
 layout = html.Div(
-    dcc.Markdown('#HOMEPAGE'), 
+    dcc.Markdown('# HOMEPAGE'), 
     style=style,
     className='row')
 
