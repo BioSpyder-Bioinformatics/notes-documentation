@@ -43,6 +43,7 @@ def SideBar(app, children='This is the sidebar', **kwargs):
     )
     def change_sidebar_style(click, style):
         print('CLICKED', click, style)
+        print(dash.page_registry.values())
         if style['width'] == '12%':
             return {'width': '3%'}, div_small, {'width': '97%'}
         else:

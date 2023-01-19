@@ -8,7 +8,7 @@ style = {
 
 
 #For later on to map to navbar
-dash.register_page(__name__, path='/')#as it is homepage
+dash.register_page(__name__, path='/', name='Homepage')#as it is homepage
 
 
 #instead of returning things, we just declare the layout
