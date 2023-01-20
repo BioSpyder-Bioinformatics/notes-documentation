@@ -413,7 +413,7 @@ A1,,R801,AAGACTCTT,F801,AAGGTGTTT,
 - Does the 48 well layout run on a 96 well plate? In the sample sheet there are 48 wells for the samples and 16 extra for the controls
 	+ Ask Garret
 
-- For the 96 well plate, do I need to enforce leaving the last two rows empty?
+- For the 96 well plate, do I need to enforce leaving the last two column empty?
 	+ Ask Garret
 
 - Is there a difference between the 800 and 900 probes? If yes should I prompt the user to pick one or the other?
@@ -426,7 +426,51 @@ A1,,R801,AAGACTCTT,F801,AAGGTGTTT,
 
 
 
+- How many pos/neg controls per sample sheet. Actively enforce this in pre-determined wells 
 
+
+
+
+
+
+- If you order a 48 plate you can fill it all, how many for the 96? for pos neg 
+- Do users only use flavour 800 or 900? 
+- Why in flavour 900 there are E-F-G-H missing
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Meeting with Garrett
+- Customers can ask for up to 8 96-wells plates
+	+ Lower priority is 7 96-well plates plus 1 48-well plate
+- For 48 wells plate we give only 6 columns, the controls are managed in the rest of the table
+- Only offer the 900 series flavors (e to l)
+- In the 96-well plates
+	+ 90 samples
+	+ 6 controls
+		* 4 positive
+		* 2 negative
+- For special orders, eg. 384-well (4 • 96-well plates)
+	+ 3 plates have 6 controls each (18 total)
+	+ 1 plate has no control
+
+- Give user possibility to upload additional file with sample name and additional comments
+
+*For future*
+- Give possibility to create heatmap with mapping rate and gene count
 
 
 

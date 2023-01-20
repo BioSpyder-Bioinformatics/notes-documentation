@@ -65,7 +65,9 @@ Pass them the app reference, so they can have their own callbacks!!
 
 
 
-
+--------------
+For pages:
+Pass tuple (function, address) in description for extra function (soft link them)
 
 
 
