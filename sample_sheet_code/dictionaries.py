@@ -1,3 +1,8 @@
+# Standard plates dictionaries 
+standard_24_dict = {}
+
+standard_48_dict = {}
+
 standard_96_dict = {
     'R01': {'F01': 'nan',
         'F02': 'nan',
@@ -107,3 +112,14 @@ standard_96_dict = {
         'F07': 'nan',
         'F08': 'nan',
         'nan': 'nan'}}
+
+
+
+# Standard NGS machinery headers
+hi_seq_header = {}
+
+mini_seq_header = {}
+
+mi_seq_header = {}
+
+next_seq_header = {}
