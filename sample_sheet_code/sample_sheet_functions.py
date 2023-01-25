@@ -1,6 +1,7 @@
 ########################## Functions sections ##########################
 from dictionaries import *
 import pandas as pd
+from datetime import datetime
 ##################### Make template
 
 # 24 well plate and
