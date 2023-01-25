@@ -5,10 +5,25 @@ import pandas as pd
 
 # 24 well plate and
 # 48 well plate
+# Function to make 24 and 48 well plate sample sheet
+def make_24_48_well_sample_sheet(filename, twentyfour):
+    # Check if filename already exists!
+    if os.path.isfile(filename):
+        raise Exception('This file already exists') # Make this so the user can decide to overwrite
+    
+    #If true it's for the 24, if false it's for the 48
+    if twentyfour:
+        write = different_24_dict
+    else:
+        write = different_48_dict
+    
+    # Convert dictionary to pd data frame
+    table_to_write = pd.DataFrame.from_dict(write)
+    
+    with open(filename, 'w') as file:
+        table_to_write.to_csv(file, mode='w', index=True, header=True)
 
-
-
-
+    return 'done'
 
 
 # 96 well plate(s)
@@ -34,7 +49,7 @@ def make_96_well_sample_sheet(filename, n_plates):
             table_96_well.to_csv(file, mode='a', index=True, header=True)
     
     # In dash we return the file instance??
-
+    return 'done'
 
 
 

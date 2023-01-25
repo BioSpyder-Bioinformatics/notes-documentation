@@ -127,54 +127,54 @@ different_24_dict = {
 standard_48_dict = {}
 
 
-different_48_dict = {'R01': {'F01': 'a1',
-  'F02': 'b1',
-  'F03': 'c1',
-  'F04': 'd1',
-  'F05': 'e1',
-  'F06': 'f1',
-  'F07': 'g1',
-  'F08': 'h1'},
- 'R02': {'F01': 'a2',
-  'F02': 'b2',
-  'F03': 'c2',
-  'F04': 'd2',
-  'F05': 'e2',
-  'F06': 'f2',
-  'F07': 'g2',
-  'F08': 'h2'},
- 'R03': {'F01': 'a3',
-  'F02': 'b3',
-  'F03': 'c3',
-  'F04': 'd3',
-  'F05': 'e3',
-  'F06': 'f3',
-  'F07': 'g3',
-  'F08': 'h3'},
- 'R04': {'F01': 'a4',
-  'F02': 'b4',
-  'F03': 'c4',
-  'F04': 'd4',
-  'F05': 'e4',
-  'F06': 'f4',
-  'F07': 'g4',
-  'F08': 'h4'},
- 'R05': {'F01': 'a5',
-  'F02': 'b5',
-  'F03': 'c5',
-  'F04': 'd5',
-  'F05': 'e5',
-  'F06': 'f5',
-  'F07': 'g5',
-  'F08': 'h5'},
- 'R06': {'F01': 'a6',
-  'F02': 'b6',
-  'F03': 'c6',
-  'F04': 'd6',
-  'F05': 'e6',
-  'F06': 'f6',
-  'F07': 'g6',
-  'F08': 'h6'},
+different_48_dict = {'R01': {'F01': 'sample',
+  'F02': 'sample',
+  'F03': 'sample',
+  'F04': 'sample',
+  'F05': 'sample',
+  'F06': 'sample',
+  'F07': 'sample',
+  'F08': 'sample'},
+ 'R02': {'F01': 'sample',
+  'F02': 'sample',
+  'F03': 'sample',
+  'F04': 'sample',
+  'F05': 'sample',
+  'F06': 'sample',
+  'F07': 'sample',
+  'F08': 'sample'},
+ 'R03': {'F01': 'sample',
+  'F02': 'sample',
+  'F03': 'sample',
+  'F04': 'sample',
+  'F05': 'sample',
+  'F06': 'sample',
+  'F07': 'sample',
+  'F08': 'sample'},
+ 'R04': {'F01': 'sample',
+  'F02': 'sample',
+  'F03': 'sample',
+  'F04': 'sample',
+  'F05': 'sample',
+  'F06': 'sample',
+  'F07': 'sample',
+  'F08': 'sample'},
+ 'R05': {'F01': 'sample',
+  'F02': 'sample',
+  'F03': 'sample',
+  'F04': 'sample',
+  'F05': 'sample',
+  'F06': 'sample',
+  'F07': 'sample',
+  'F08': 'sample'},
+ 'R06': {'F01': 'sample',
+  'F02': 'sample',
+  'F03': 'sample',
+  'F04': 'sample',
+  'F05': 'sample',
+  'F06': 'sample',
+  'F07': 'sample',
+  'F08': 'sample'},
  'R07': {'F01': 'blank',
   'F02': 'blank',
   'F03': 'blank',
@@ -440,3 +440,24 @@ mini_seq_header = {}
 mi_seq_header = {}
 
 next_seq_header = {}
+
+
+
+# Primer layouts 
+
+plate_e_layout = {}
+
+plate_f_layout = {}
+
+plate_g_layout = {}
+
+plate_h_layout = {}
+
+plate_i_layout = {}
+
+plate_j_layout = {}
+
+plate_k_layout = {}
+
+plate_l_layout = {}
+
