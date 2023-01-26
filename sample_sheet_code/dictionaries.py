@@ -1,3 +1,5 @@
+from datetime import datetime
+
 # Standard plates dictionaries 
 standard_24_dict = {}
 
@@ -429,15 +431,179 @@ different_96_dict = {'R01': {'F01': 'sample',
   'F07': 'sample',
   'F08': '_bsnc'}}
 
+# Layout of the plate wells position
+plate_wells_mapping ={'R01': {'F01': 'A01',
+  'F02': 'B01',
+  'F03': 'C01',
+  'F04': 'D01',
+  'F05': 'E01',
+  'F06': 'F01',
+  'F07': 'G01',
+  'F08': 'H01'},
+ 'R02': {'F01': 'A02',
+  'F02': 'B02',
+  'F03': 'C02',
+  'F04': 'D02',
+  'F05': 'E02',
+  'F06': 'F02',
+  'F07': 'G02',
+  'F08': 'H02'},
+ 'R03': {'F01': 'A03',
+  'F02': 'B03',
+  'F03': 'C03',
+  'F04': 'D03',
+  'F05': 'E03',
+  'F06': 'F03',
+  'F07': 'G03',
+  'F08': 'H03'},
+ 'R04': {'F01': 'A04',
+  'F02': 'B04',
+  'F03': 'C04',
+  'F04': 'D04',
+  'F05': 'E04',
+  'F06': 'F04',
+  'F07': 'G04',
+  'F08': 'H04'},
+ 'R05': {'F01': 'A05',
+  'F02': 'B05',
+  'F03': 'C05',
+  'F04': 'D05',
+  'F05': 'E05',
+  'F06': 'F05',
+  'F07': 'G05',
+  'F08': 'H05'},
+ 'R06': {'F01': 'A06',
+  'F02': 'B06',
+  'F03': 'C06',
+  'F04': 'D06',
+  'F05': 'E06',
+  'F06': 'F06',
+  'F07': 'G06',
+  'F08': 'H06'},
+ 'R07': {'F01': 'A07',
+  'F02': 'B07',
+  'F03': 'C07',
+  'F04': 'D07',
+  'F05': 'E07',
+  'F06': 'F07',
+  'F07': 'G07',
+  'F08': 'H07'},
+ 'R08': {'F01': 'A08',
+  'F02': 'B08',
+  'F03': 'C08',
+  'F04': 'D08',
+  'F05': 'E08',
+  'F06': 'F08',
+  'F07': 'G08',
+  'F08': 'H08'},
+ 'R09': {'F01': 'A09',
+  'F02': 'B09',
+  'F03': 'C09',
+  'F04': 'D09',
+  'F05': 'E09',
+  'F06': 'F09',
+  'F07': 'G09',
+  'F08': 'H09'},
+ 'R10': {'F01': 'A10',
+  'F02': 'B10',
+  'F03': 'C10',
+  'F04': 'D10',
+  'F05': 'E10',
+  'F06': 'F10',
+  'F07': 'G10',
+  'F08': 'H10'},
+ 'R11': {'F01': 'A11',
+  'F02': 'B11',
+  'F03': 'C11',
+  'F04': 'D11',
+  'F05': 'E11',
+  'F06': 'F11',
+  'F07': 'G11',
+  'F08': 'H11'},
+ 'R12': {'F01': 'A12',
+  'F02': 'B12',
+  'F03': 'C12',
+  'F04': 'D12',
+  'F05': 'E12',
+  'F06': 'F12',
+  'F07': 'G12',
+  'F08': 'H12'}}
 
-# Standard NGS machinery headers
-hi_seq_header = {}
 
-mini_seq_header = {}
+# Standard NGS machinery headers (made as functions)
+hi_seq_header = {} # NO HEADER
 
-mi_seq_header = {}
+def make_miniseq_header(experiment_name):
+    date = datetime.today().strftime('%m/%d/%Y')
+    text = f'''[Header],,,,,,
+    Experiment Name,{experiment_name},,,,,
+    Date,{date},,,,,
+    Module,GenerateFASTQ - 2.0.1,,,,,
+    Workflow,GenerateFASTQ,,,,,
+    Library Prep Kit,BioSpyder900,,,,,
+    Chemistry,Amplicon,,,,,
+    [Reads],,,,,,
+    50,,,,,,
+    [Settings],,,,,,
+    adapter,CTGTCTCTTATACACATCT,,,,,
+    [Data],,,,,,
+    Sample_ID,Description,I7_Index_ID,index,I5_Index_ID,index2,Sample_Project
+    '''
+    return text
 
-next_seq_header = {}
+
+def make_miseq_header(project_name, experiment_name, comments):
+    date = datetime.today().strftime('%m/%d/%Y')
+    text = f'''"[Header]",""," "," "," "," "," "," "," "," "
+    "IEMFileVersion","4"," "," "," "," "," "," "," "," "
+    "Investigator","BioSpyder"," "," "," "," "," "," "," "," "
+    "Project Name","{project_name}"," "," "," "," "," "," "," "," "
+    "Experiment Name","{experiment_name}"," "," "," "," "," "," "," "," "
+    "Date","{date}"," "," "," "," "," "," "," "," "
+    "Workflow","GenerateFASTQ"," "," "," "," "," "," "," "," "
+    "Application","FASTQ Only"," "," "," "," "," "," "," "," "
+    "Assay","Nextera"," "," "," "," "," "," "," "," "
+    "Description","MiSeq"," "," "," "," "," "," "," "," "
+    "Chemistry","Amplicon"," "," "," "," "," "," "," "," "
+    "Additional Comments","{comments}","","","","","","","",""
+    "[Manifests]",""," "," "," "," "," "," "," "," "
+    "",""," "," "," "," "," "," "," "," "
+    "[Reads]",""," "," "," "," "," "," "," "," "
+    "50",""," "," "," "," "," "," "," "," "
+    "[Settings]",""," "," "," "," "," "," "," "," "
+    "CustomIndexPrimerMix","C2"," "," "," "," "," "," "," "," "
+    "",""," "," "," "," "," "," "," "," "
+    "[Data]",""," "," "," "," "," "," "," "," "
+    "Sample_ID","Sample_Name","Sample_Plate","Sample_Well","I7_Index_ID","index","I5_Index_ID","index2","Sample_Project","Description"
+    '''
+
+    return text
+
+
+def make_nextseq_header(project_name, experiment_name, comments):
+    date = datetime.today().strftime('%m/%d/%Y')
+    text = f'''"[Header]",""," "," "," "," "," "," "," "," "
+    "IEMFileVersion","4"," "," "," "," "," "," "," "," "
+    "Investigator","BioSpyder"," "," "," "," "," "," "," "," "
+    "Project Name","{project_name}"," "," "," "," "," "," "," "," "
+    "Experiment Name","{experiment_name}"," "," "," "," "," "," "," "," "
+    "Date","{date}"," "," "," "," "," "," "," "," "
+    "Workflow","GenerateFASTQ"," "," "," "," "," "," "," "," "
+    "Application","NextSeq FASTQ Only"," "," "," "," "," "," "," "," "
+    "Assay","Nextera"," "," "," "," "," "," "," "," "
+    "Description","NextSeq"," "," "," "," "," "," "," "," "
+    "Chemistry","Amplicon"," "," "," "," "," "," "," "," "
+    "Additional Comments","{comments}","","","","","","","",""
+    "[Manifests]",""," "," "," "," "," "," "," "," "
+    "",""," "," "," "," "," "," "," "," "
+    "[Reads]",""," "," "," "," "," "," "," "," "
+    "50",""," "," "," "," "," "," "," "," "
+    "[Settings]",""," "," "," "," "," "," "," "," "
+    "CustomIndexPrimerMix","C2"," "," "," "," "," "," "," "," "
+    "",""," "," "," "," "," "," "," "," "
+    "[Data]",""," "," "," "," "," "," "," "," "
+    "Sample_ID","Sample_Name","Sample_Plate","Sample_Well","I7_Index_ID","index","I5_Index_ID","index2","Sample_Project","Description"'''
+    return text
 
 
 
@@ -831,7 +997,7 @@ plate_h_layout = {'A01': ('F937', 'R936'),
  'G12': ('F943', 'R996'),
  'H12': ('F944', 'R996')}
 
-plate_i_layout = {{'A01': ('F910', 'R902'),
+plate_i_layout = {'A01': ('F910', 'R902'),
  'B01': ('F913', 'R902'),
  'C01': ('F914', 'R902'),
  'D01': ('F915', 'R902'),
@@ -926,7 +1092,7 @@ plate_i_layout = {{'A01': ('F910', 'R902'),
  'E12': ('F923', 'R935'),
  'F12': ('F928', 'R935'),
  'G12': ('F930', 'R935'),
- 'H12': ('F933', 'R935')}}
+ 'H12': ('F933', 'R935')}
 
 plate_j_layout = {'A01': ('F910', 'R936'),
  'B01': ('F913', 'R936'),
@@ -1218,6 +1384,17 @@ plate_l_layout = {'A01': ('F946', 'R936'),
  'F12': ('F954', 'R996'),
  'G12': ('F962', 'R996'),
  'H12': ('F964', 'R996')}
+
+flavours_list = {
+    'E':plate_e_layout,
+    'F':plate_f_layout,
+    'G':plate_g_layout,
+    'H':plate_h_layout,
+    'I':plate_i_layout,
+    'J':plate_j_layout,
+    'K':plate_k_layout,
+    'L':plate_l_layout
+}
 
 
 ############FOR SALVO: SOME F REVERSE PRIMERS ARE IDENTICAL TO THE R ONES!!!

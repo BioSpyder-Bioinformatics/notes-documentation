@@ -2,6 +2,7 @@
 from dictionaries import *
 import pandas as pd
 from datetime import datetime
+import numpy as np
 ##################### Make template
 
 # 24 well plate and
@@ -76,6 +77,12 @@ def make_96_well_sample_sheet(filename, n_plates):
 
 
 # Function to get 96-plates (even if many • doesn't enforce-check if it's doing it right)
+# Need to read in the sample sheet before
+# 
+# sheet = pd.read_csv('file_name.csv', index_col=0)
+# OORRRRR
+#sheet = pd.read_excel('filename.csv', index_col=0)
+
 def get_tables(sample_sheet):
     # Number of rows in sample sheet
     df_len = len(sample_sheet)
