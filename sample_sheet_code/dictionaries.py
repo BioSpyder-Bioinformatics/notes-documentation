@@ -531,50 +531,52 @@ plate_wells_mapping ={'R01': {'F01': 'A01',
 
 
 # Standard NGS machinery headers (made as functions)
-hi_seq_header = {} # NO HEADER
+def make_hiseq_header():
+    return '''"Sample_ID","Sample_Name","Sample_Plate","Sample_Well","I7_Index_ID","index","I5_Index_ID","index2","Sample_Project","Description"
+    '''
 
 def make_miniseq_header(experiment_name):
     date = datetime.today().strftime('%m/%d/%Y')
     text = f'''[Header],,,,,,
-    Experiment Name,{experiment_name},,,,,
-    Date,{date},,,,,
-    Module,GenerateFASTQ - 2.0.1,,,,,
-    Workflow,GenerateFASTQ,,,,,
-    Library Prep Kit,BioSpyder900,,,,,
-    Chemistry,Amplicon,,,,,
-    [Reads],,,,,,
-    50,,,,,,
-    [Settings],,,,,,
-    adapter,CTGTCTCTTATACACATCT,,,,,
-    [Data],,,,,,
-    Sample_ID,Description,I7_Index_ID,index,I5_Index_ID,index2,Sample_Project
-    '''
+Experiment Name,{experiment_name},,,,,
+Date,{date},,,,,
+Module,GenerateFASTQ - 2.0.1,,,,,
+Workflow,GenerateFASTQ,,,,,
+Library Prep Kit,BioSpyder900,,,,,
+Chemistry,Amplicon,,,,,
+[Reads],,,,,,
+50,,,,,,
+[Settings],,,,,,
+adapter,CTGTCTCTTATACACATCT,,,,,
+[Data],,,,,,
+Sample_ID,Description,I7_Index_ID,index,I5_Index_ID,index2,Sample_Project
+'''
     return text
 
 
 def make_miseq_header(project_name, experiment_name, comments):
     date = datetime.today().strftime('%m/%d/%Y')
     text = f'''"[Header]",""," "," "," "," "," "," "," "," "
-    "IEMFileVersion","4"," "," "," "," "," "," "," "," "
-    "Investigator","BioSpyder"," "," "," "," "," "," "," "," "
-    "Project Name","{project_name}"," "," "," "," "," "," "," "," "
-    "Experiment Name","{experiment_name}"," "," "," "," "," "," "," "," "
-    "Date","{date}"," "," "," "," "," "," "," "," "
-    "Workflow","GenerateFASTQ"," "," "," "," "," "," "," "," "
-    "Application","FASTQ Only"," "," "," "," "," "," "," "," "
-    "Assay","Nextera"," "," "," "," "," "," "," "," "
-    "Description","MiSeq"," "," "," "," "," "," "," "," "
-    "Chemistry","Amplicon"," "," "," "," "," "," "," "," "
-    "Additional Comments","{comments}","","","","","","","",""
-    "[Manifests]",""," "," "," "," "," "," "," "," "
-    "",""," "," "," "," "," "," "," "," "
-    "[Reads]",""," "," "," "," "," "," "," "," "
-    "50",""," "," "," "," "," "," "," "," "
-    "[Settings]",""," "," "," "," "," "," "," "," "
-    "CustomIndexPrimerMix","C2"," "," "," "," "," "," "," "," "
-    "",""," "," "," "," "," "," "," "," "
-    "[Data]",""," "," "," "," "," "," "," "," "
-    "Sample_ID","Sample_Name","Sample_Plate","Sample_Well","I7_Index_ID","index","I5_Index_ID","index2","Sample_Project","Description"
+"IEMFileVersion","4"," "," "," "," "," "," "," "," "
+"Investigator","BioSpyder"," "," "," "," "," "," "," "," "
+"Project Name","{project_name}"," "," "," "," "," "," "," "," "
+"Experiment Name","{experiment_name}"," "," "," "," "," "," "," "," "
+"Date","{date}"," "," "," "," "," "," "," "," "
+"Workflow","GenerateFASTQ"," "," "," "," "," "," "," "," "
+"Application","FASTQ Only"," "," "," "," "," "," "," "," "
+"Assay","Nextera"," "," "," "," "," "," "," "," "
+"Description","MiSeq"," "," "," "," "," "," "," "," "
+"Chemistry","Amplicon"," "," "," "," "," "," "," "," "
+"Additional Comments","{comments}","","","","","","","",""
+"[Manifests]",""," "," "," "," "," "," "," "," "
+"",""," "," "," "," "," "," "," "," "
+"[Reads]",""," "," "," "," "," "," "," "," "
+"50",""," "," "," "," "," "," "," "," "
+"[Settings]",""," "," "," "," "," "," "," "," "
+"CustomIndexPrimerMix","C2"," "," "," "," "," "," "," "," "
+"",""," "," "," "," "," "," "," "," "
+"[Data]",""," "," "," "," "," "," "," "," "
+"Sample_ID","Sample_Name","Sample_Plate","Sample_Well","I7_Index_ID","index","I5_Index_ID","index2","Sample_Project","Description"
     '''
 
     return text
@@ -583,26 +585,27 @@ def make_miseq_header(project_name, experiment_name, comments):
 def make_nextseq_header(project_name, experiment_name, comments):
     date = datetime.today().strftime('%m/%d/%Y')
     text = f'''"[Header]",""," "," "," "," "," "," "," "," "
-    "IEMFileVersion","4"," "," "," "," "," "," "," "," "
-    "Investigator","BioSpyder"," "," "," "," "," "," "," "," "
-    "Project Name","{project_name}"," "," "," "," "," "," "," "," "
-    "Experiment Name","{experiment_name}"," "," "," "," "," "," "," "," "
-    "Date","{date}"," "," "," "," "," "," "," "," "
-    "Workflow","GenerateFASTQ"," "," "," "," "," "," "," "," "
-    "Application","NextSeq FASTQ Only"," "," "," "," "," "," "," "," "
-    "Assay","Nextera"," "," "," "," "," "," "," "," "
-    "Description","NextSeq"," "," "," "," "," "," "," "," "
-    "Chemistry","Amplicon"," "," "," "," "," "," "," "," "
-    "Additional Comments","{comments}","","","","","","","",""
-    "[Manifests]",""," "," "," "," "," "," "," "," "
-    "",""," "," "," "," "," "," "," "," "
-    "[Reads]",""," "," "," "," "," "," "," "," "
-    "50",""," "," "," "," "," "," "," "," "
-    "[Settings]",""," "," "," "," "," "," "," "," "
-    "CustomIndexPrimerMix","C2"," "," "," "," "," "," "," "," "
-    "",""," "," "," "," "," "," "," "," "
-    "[Data]",""," "," "," "," "," "," "," "," "
-    "Sample_ID","Sample_Name","Sample_Plate","Sample_Well","I7_Index_ID","index","I5_Index_ID","index2","Sample_Project","Description"'''
+"IEMFileVersion","4"," "," "," "," "," "," "," "," "
+"Investigator","BioSpyder"," "," "," "," "," "," "," "," "
+"Project Name","{project_name}"," "," "," "," "," "," "," "," "
+"Experiment Name","{experiment_name}"," "," "," "," "," "," "," "," "
+"Date","{date}"," "," "," "," "," "," "," "," "
+"Workflow","GenerateFASTQ"," "," "," "," "," "," "," "," "
+"Application","NextSeq FASTQ Only"," "," "," "," "," "," "," "," "
+"Assay","Nextera"," "," "," "," "," "," "," "," "
+"Description","NextSeq"," "," "," "," "," "," "," "," "
+"Chemistry","Amplicon"," "," "," "," "," "," "," "," "
+"Additional Comments","{comments}","","","","","","","",""
+"[Manifests]",""," "," "," "," "," "," "," "," "
+"",""," "," "," "," "," "," "," "," "
+"[Reads]",""," "," "," "," "," "," "," "," "
+"50",""," "," "," "," "," "," "," "," "
+"[Settings]",""," "," "," "," "," "," "," "," "
+"CustomIndexPrimerMix","C2"," "," "," "," "," "," "," "," "
+"",""," "," "," "," "," "," "," "," "
+"[Data]",""," "," "," "," "," "," "," "," "
+"Sample_ID","Sample_Name","Sample_Plate","Sample_Well","I7_Index_ID","index","I5_Index_ID","index2","Sample_Project","Description"
+'''
     return text
 
 

@@ -1,4 +1,5 @@
 ########################## Functions sections ##########################
+import os
 from dictionaries import *
 import pandas as pd
 from datetime import datetime
@@ -8,10 +9,7 @@ import numpy as np
 # 24 well plate and
 # 48 well plate
 # Function to make 24 and 48 well plate sample sheet
-def make_24_48_well_sample_sheet(filename, twentyfour):
-    # Check if filename already exists!
-    if os.path.isfile(filename):
-        raise Exception('This file already exists') # Make this so the user can decide to overwrite
+def make_24_48_well_sample_sheet(filename, twentyfour, is_csv=True):
     
     #If true it's for the 24, if false it's for the 48
     if twentyfour:
@@ -22,14 +20,17 @@ def make_24_48_well_sample_sheet(filename, twentyfour):
     # Convert dictionary to pd data frame
     table_to_write = pd.DataFrame.from_dict(write)
     
-    with open(filename, 'w') as file:
-        table_to_write.to_csv(file, mode='w', index=True, header=True)
+    string = table_to_write.to_csv()
 
-    return 'done'
+    return string
+
+    # with open(filename, 'w') as file:
+    #     table_to_write.to_csv(file, mode='w', index=True, header=True)
+
+    # return 'done'
 
 
 # 96 well plate(s)
-import os
 
 
 # Function requires filename and the number of plates to be concatenated (1<x<8)
@@ -40,18 +41,22 @@ def make_96_well_sample_sheet(filename, n_plates):
     # n_plates has to be 1 < x < 8
     if n_plates < 1 or n_plates > 8:
         raise Exception('Cannot process that quantity')
-    
-    # Check if filename already exists!
-    if os.path.isfile(filename):
-        raise Exception('This file already exists') # Make this so the user can decide to overwrite
 
-    # Open file once and append tables to it. The file is opened in 'w' so to over-write anything else (anyway you get blocked by the exception above if the file already exists)
-    with open(filename, 'w') as file:
-        for _ in range(n_plates):
-            table_96_well.to_csv(file, mode='a', index=True, header=True)
+    #Return string for ease
+    string = ''
+    for _ in range(n_plates):
+        string += table_96_well.to_csv() + ',,,,,,,,,,,,\n'
+
+    return string
     
-    # In dash we return the file instance??
-    return 'done'
+    #Old method, best returning the string
+    # # Open file once and append tables to it. The file is opened in 'w' so to over-write anything else (anyway you get blocked by the exception above if the file already exists)
+    # with open(filename, 'w') as file:
+    #     for _ in range(n_plates):
+    #         table_96_well.to_csv(file, mode='a', index=True, header=True)
+    
+    # # In dash we return the file instance??
+    # return 'done'
 
 
 
@@ -106,10 +111,62 @@ def get_tables(sample_sheet):
 
 
 
-##################### Prepare melted table
+##################### Prepare melted table (without header, one DF at the time)
+def map_plate(to_map, flavour, next_seq=False, mini_seq=False):
+    # Mapped_plate is a constant, flavour changes for 24 and 48 to 24/48-Well
+    mapped_plate = pd.DataFrame.from_dict(plate_wells_mapping)
 
-#
+    df = pd.DataFrame({'Sample_Name':to_map.values.ravel(), 'Sample_Well': mapped_plate.values.ravel()})
+    df['Sample_Plate'] = flavour 
 
+    #OTHER CHECKS?? IF BLANK REMOVE? !!!!!!!!!!!!!!!!!!!!!!
+
+
+    # Add indexes from dictionaries
+    indexes_flavours = flavours_list[flavour]
+    df['I5_Index_ID'] = df['Sample_Well'].apply(lambda x: indexes_flavours[x][0])
+    df['I7_Index_ID'] = df['Sample_Well'].apply(lambda x: indexes_flavours[x][1])
+
+    #Map sequences from index name
+    # df['I5_Index_ID'] = df['Sample_Well'].map(indexes_flavours)
+
+    df['index'] = df['I7_Index_ID'].map(r_primers_to_sequence)
+
+    #If next seq map to other dict
+    if next_seq:
+        df['index2'] = df['I5_Index_ID'].map(f_primers_to_reverse_complement)
+    else:
+        df['index2'] = df['I5_Index_ID'].map(f_primers_to_sequence)
+
+    # Add Sample_Project and Description rows (empty rows)
+    df['Sample_Project'], df['Description']  = np.nan, np.nan
+    
+    # Add Sample_ID (eg row index, but with index 1 instead of 0)
+    df['Sample_ID'] = df.index +1
+
+    if mini_seq:
+        df = df[['Sample_ID', 'Description', 'I7_Index_ID', 'index', 'I5_Index_ID', 'index2', 'Sample_Project']]
+    else:
+        df = df[['Sample_ID', 'Sample_Name', 'Sample_Plate', 'Sample_Well', 'I7_Index_ID', 'index', 'I5_Index_ID', 'index2', 'Sample_Project', 'Description']]
+
+    return df
+
+#map_plate(to_map, flavour) # Add kwargs next_seq/mini_seq if required
+
+
+def loop_and_stack(tables, flavours, **kwargs):
+    dfs = []
+    for table, flavour in zip(tables, flavours):
+        dfs.append(map_plate(table, flavour, **kwargs))
+    return dfs
+
+
+
+
+def concatenate_and_reindex(tables):
+    merged = pd.concat([table for table in tables]).reset_index(drop=True)
+    merged['Sample_ID'] = merged.index + 1
+    return merged
 
 
 

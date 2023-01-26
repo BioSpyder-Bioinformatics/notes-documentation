@@ -1,0 +1,8 @@
+Do need:
+- Export sample sheet template in xlsx
+
+
+- On reupload - get_tables() needs to recognise if the table is 24/48/96
+    + Also it's best to do the sample names checks here!
+- On reupload - support xlsx format
+
