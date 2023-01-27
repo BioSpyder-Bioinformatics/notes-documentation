@@ -4,6 +4,7 @@ from dictionaries import *
 import pandas as pd
 from datetime import datetime
 import numpy as np
+import re
 ##################### Make template
 
 # 24 well plate and
@@ -167,6 +168,109 @@ def concatenate_and_reindex(tables):
     merged = pd.concat([table for table in tables]).reset_index(drop=True)
     merged['Sample_ID'] = merged.index + 1
     return merged
+
+
+
+def check_table(table):
+    cells = list(table.values.ravel())
+    blanks = 0
+    pos_controls = 0
+    neg_controls = 0
+    # Regular expression extracts all cells that start with one or more underscores and are not positive or negative controls
+    to_change = []
+    for cell in list(cells):
+        # Check for regex
+        match = re.findall(r'(_+(?!bsnc|bspc)\w+)', cell)
+        if match:
+            cells.remove(cell)
+            to_change.append(match[0])
+
+        #Check if blank
+        if cell == 'blank':
+            cells.remove(cell)
+            blanks +=1 
+
+        #Check if pos control
+        if cell == '_bspc':
+            cells.remove(cell)
+            pos_controls +=1 
+
+        #Check if neg control
+        if cell == '_bsnc':
+            cells.remove(cell)
+            neg_controls +=1 
+
+    total_samples=len(cells)
+    unique_sample_names=len(set(cells))
+    something_wrong = len(to_change) > 0 or total_samples != unique_sample_names
+    
+    specs = dict(blanks = blanks, positive_controls = pos_controls, negative_controls=neg_controls, to_change = to_change, total_samples=total_samples, unique_sample_names=unique_sample_names, something_wrong=something_wrong)
+    return specs
+
+
+
+
+
+
+
+
+
+
+
+
+######## For new solution
+
+def map_sample_to_well(table, flavour):
+    mapped_plate = pd.DataFrame.from_dict(plate_wells_mapping)
+
+    df = pd.DataFrame({'Sample_Name':table.values.ravel(), 'Sample_Well': mapped_plate.values.ravel()})
+    df['Sample_Plate'] = flavour
+
+    return df
+
+
+
+def stack_data_frames(dfs):
+    return pd.concat([df for df in dfs]).reset_index(drop=True)
+
+
+
+
+def compare_rows(complete, user):
+    traslated_dict = user.T.to_dict()
+    traslated_arr_of_dict = [traslated_dict[x] for x in range(len(traslated_dict))]
+
+    # Get from complete DF well name the plate flavor and well position (_ is placeholder)
+    _, plate, well = complete.strip('_').split('_')
+
+    #Make case 
+    match = False
+    name = None
+
+    for row in traslated_arr_of_dict:
+        if row['Sample_Well'] == well and row['Sample_Plate'] == plate:
+            match = True
+            name = row['Sample_Name']
+       
+    return name if match else complete
+
+
+
+
+def migrate_sample_name(complete, user):
+    match = False
+    name = None
+    
+    complete['Sample_Name'] = complete['Sample_Name'].apply(lambda x: compare_rows(x, user))
+    #pd.DataFrame.apply(compare_rows(complete.iterrows(), user))
+    return complete
+
+
+
+def filter_df(df):
+    df2 = df[~df['Sample_Name'].str.startswith('__')]
+    return df2
+
 
 
 
