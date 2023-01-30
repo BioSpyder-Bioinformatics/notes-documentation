@@ -119,10 +119,13 @@ for file in files:
             # Check that there is a folder with the plate number, if not create it
             for (dirpath, dirnames, filenames) in os.walk(dir):
                 # If the plate folder does not exist make it
-                if plate not in dirnames:
+                # print(dirnames, new_plate_name)
+
+                if plate not in dirnames and new_plate_name not in dirnames:
+                    # print(dirnames)
                     if not dry:
                         plate_holder = plate
-                        plate = new_plate_name
+                        plate = new_plate_name   
                         os.system(f'mkdir {dir}/{plate}')
                         plate = plate_holder
 
