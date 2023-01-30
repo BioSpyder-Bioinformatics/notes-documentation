@@ -20,7 +20,7 @@ else:
     dry = True
 
 active_folder = input('Please select the folder: ')
-
+new_plate_name = input('Please insert new plate name: ')
 
 
 
@@ -121,10 +121,15 @@ for file in files:
                 # If the plate folder does not exist make it
                 if plate not in dirnames:
                     if not dry:
+                        plate_holder = plate
+                        plate = new_plate_name
                         os.system(f'mkdir {dir}/{plate}')
+                        plate = plate_holder
 
                 #if it exists already just add the file and copy it to change the name
                 if not dry:
+                    plate_holder = plate
+                    plate = new_plate_name
                     #Copy file
                     os.system(f'cp {dir}/{file} {dir}/{plate}')
 
@@ -133,6 +138,8 @@ for file in files:
 
                     # Remove old filename
                     os.system(f'rm {dir}/{plate}/{file}')
+                    plate = plate_holder
+
                 break
 
             
@@ -174,7 +181,7 @@ for (dirpath, dirnames, filenames) in os.walk(dir):
         # For each of the directories
         for directory in dirnames:
             # Check if the directory is registered as a plate folder
-            if directory in report_dict['plates']:
+            if directory in report_dict['plates'] or directory == new_plate_name:
                 # Count the number of files and append it to dictionary
                 report_dict['final_filecount'][directory] = len(os.listdir(f'{dir}/{directory}'))
                 total_final_files += len(os.listdir(f'{dir}/{directory}'))
