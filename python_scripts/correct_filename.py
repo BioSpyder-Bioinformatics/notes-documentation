@@ -10,8 +10,18 @@ import re
 
 # Dry run, eg only get report
 # User inputs
-dry = False
+dry = True
 active_folder = 'to_correct'
+
+dry = input('Is this a dry run? Y/n ').lower()
+if dry == 'n' or dry == 'no':
+    dry = False
+else:
+    dry = True
+
+active_folder = input('Please select the folder: ')
+
+
 
 
 # Standard BIOS, has to be the same
@@ -68,8 +78,12 @@ if len(set(bios_experiments)) > 1:
     print(f'There is more than one experiment in this folder, please double check! You have files for experiment BIOS:', [x for x in set(bios_experiments)])
     raise SystemExit()
 
-bios_number = bios_experiments[0]
-
+# This throws an error if there is issue with the directory name or if no files that start with BIOS exist
+try:
+    bios_number = bios_experiments[0]
+except:
+    print('Something went wrong when selecting the directory, no BIOS files found')
+    raise SystemExit
 
 
 # Iterate through each file:
@@ -152,6 +166,7 @@ report_dict['plates'] = set(report_dict['plates'])
 
 
 
+total_final_files = 0
 # Check the number of transferred files
 for (dirpath, dirnames, filenames) in os.walk(dir): 
     # If there are directories
@@ -162,13 +177,10 @@ for (dirpath, dirnames, filenames) in os.walk(dir):
             if directory in report_dict['plates']:
                 # Count the number of files and append it to dictionary
                 report_dict['final_filecount'][directory] = len(os.listdir(f'{dir}/{directory}'))
-    
-
-
-
-
-    report_dict['initial_filecount'] = len(files)
+                total_final_files += len(os.listdir(f'{dir}/{directory}'))
     break
+# Calculate missing files
+report_dict['final_filecount']['Missing'] = report_dict['initial_filecount'] - total_final_files
 
 
 

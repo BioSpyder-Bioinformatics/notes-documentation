@@ -10,7 +10,6 @@ dir = os.getcwd()
 
 
 # Remove content of directory
-
 os.system(f'rm -r {dir}/to_correct/*')
 
 
