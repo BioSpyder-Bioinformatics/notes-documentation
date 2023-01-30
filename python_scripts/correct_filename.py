@@ -9,14 +9,16 @@ import re
 
 
 # Dry run, eg only get report
-dry = True
+# User inputs
+dry = False
+active_folder = 'to_correct'
 
 
 # Standard BIOS, has to be the same
 bios_number = None
 correct_file_extension = 'fastq.gz'
 # Current directory
-dir = os.getcwd() + '/to_correct' # Correct this
+dir = os.getcwd() + '/' + active_folder  # Correct this
 
 
 # Declare report Dictionary
@@ -30,7 +32,9 @@ report_dict=dict(
     },
     unformatted_filenames = [],
     controls = [],
-    out_of_ordinary = []
+    out_of_ordinary = [],
+    initial_filecount = 0,
+    final_filecount = {}
 )
 
 
@@ -46,6 +50,7 @@ for (dirpath, dirnames, filenames) in os.walk(dir):
             print('Stopping execution')
             raise SystemExit(0)
     print('These are your files: ', len(files))
+    report_dict['initial_filecount'] = len(files)
     break
 
 
@@ -103,13 +108,17 @@ for file in files:
                 if plate not in dirnames:
                     if not dry:
                         os.system(f'mkdir {dir}/{plate}')
-                else:
-                    #if it exists already just add the file and copy it to change the name
-                    if not dry:
-                        #Copy file
-                        os.system(f'cp {file} {plate}/')
-                        # Change filename
-                        os.system(f'cp {plate}/{file} {plate}/{plate}_{well}.fastq.gz')
+
+                #if it exists already just add the file and copy it to change the name
+                if not dry:
+                    #Copy file
+                    os.system(f'cp {dir}/{file} {dir}/{plate}')
+
+                    # Change filename
+                    os.system(f'cp {dir}/{plate}/{file} {dir}/{plate}/{plate}_{well}.fastq.gz')
+
+                    # Remove old filename
+                    os.system(f'rm {dir}/{plate}/{file}')
                 break
 
             
@@ -133,15 +142,55 @@ for file in files:
 
 
 
+def format_well_listing(dictionary):
+    pass
+
+
+
 # Make the report plates a set
 report_dict['plates'] = set(report_dict['plates'])
 
-print(report_dict)
+
+
+# Check the number of transferred files
+for (dirpath, dirnames, filenames) in os.walk(dir): 
+    # If there are directories
+    if dirnames:
+        # For each of the directories
+        for directory in dirnames:
+            # Check if the directory is registered as a plate folder
+            if directory in report_dict['plates']:
+                # Count the number of files and append it to dictionary
+                report_dict['final_filecount'][directory] = len(os.listdir(f'{dir}/{directory}'))
+    
+
+
+
+
+    report_dict['initial_filecount'] = len(files)
+    break
+
+
+
+text = f"""
+Final report:
+Number of plates: {len(report_dict['plates'])};
+Plates listed: {', '.join([x for x in report_dict['plates']])};
+Wells listing: {report_dict['wells_listing']};
+Controls: {', '.join([x for x in report_dict['controls']]) if len(report_dict['controls'])>0 else '0'};
+Unformatted files: {', '.join([x for x in report_dict['unformatted_filenames']]) if len(report_dict['unformatted_filenames'])>0 else '0'};
+Out of ordinary files: {', '.join([x for x in report_dict['out_of_ordinary']]) if len(report_dict['out_of_ordinary'])>0 else '0'};
+Initial file count: {report_dict['initial_filecount']};
+Final file count by plate: {report_dict['final_filecount']};
+"""
+
+print(text)
+
+
 
 
 # Make folder with plate number name
 # Copy file in that folder + remove BIOS#### in front
-
 
 
 
