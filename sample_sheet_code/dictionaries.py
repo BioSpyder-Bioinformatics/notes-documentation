@@ -533,7 +533,7 @@ plate_wells_mapping ={'R01': {'F01': 'A01',
 # Standard NGS machinery headers (made as functions)
 def make_hiseq_header():
     return '''"Sample_ID","Sample_Name","Sample_Plate","Sample_Well","I7_Index_ID","index","I5_Index_ID","index2","Sample_Project","Description"
-    '''
+'''
 
 def make_miniseq_header(experiment_name):
     date = datetime.today().strftime('%m/%d/%Y')
@@ -577,7 +577,7 @@ def make_miseq_header(project_name, experiment_name, comments):
 "",""," "," "," "," "," "," "," "," "
 "[Data]",""," "," "," "," "," "," "," "," "
 "Sample_ID","Sample_Name","Sample_Plate","Sample_Well","I7_Index_ID","index","I5_Index_ID","index2","Sample_Project","Description"
-    '''
+'''
 
     return text
 

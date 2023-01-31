@@ -269,6 +269,8 @@ def migrate_sample_name(complete, user):
 
 def filter_df(df):
     df2 = df[~df['Sample_Name'].str.startswith('__')]
+    df2 = df2.reset_index(drop=True)
+    df2['Sample_ID'] = df2.index +1
     return df2
 
 
