@@ -2,7 +2,6 @@
 import os
 from dictionaries import *
 import pandas as pd
-from datetime import datetime
 import numpy as np
 import re
 ##################### Make template
@@ -111,7 +110,7 @@ def get_tables(sample_sheet):
 
 
 
-
+# Old workflow fn
 ##################### Prepare melted table (without header, one DF at the time)
 def map_plate(to_map, flavour, next_seq=False, mini_seq=False):
     # Mapped_plate is a constant, flavour changes for 24 and 48 to 24/48-Well
@@ -154,7 +153,7 @@ def map_plate(to_map, flavour, next_seq=False, mini_seq=False):
 
 #map_plate(to_map, flavour) # Add kwargs next_seq/mini_seq if required
 
-
+# Old workflow fn
 def loop_and_stack(tables, flavours, **kwargs):
     dfs = []
     for table, flavour in zip(tables, flavours):
@@ -163,14 +162,14 @@ def loop_and_stack(tables, flavours, **kwargs):
 
 
 
-
+# Old workflow fn
 def concatenate_and_reindex(tables):
     merged = pd.concat([table for table in tables]).reset_index(drop=True)
     merged['Sample_ID'] = merged.index + 1
     return merged
 
 
-
+# Checks if the sample names inputed by user are in line with the suggested naming convention
 def check_table(table):
     cells = list(table.values.ravel())
     blanks = 0
@@ -219,7 +218,7 @@ def check_table(table):
 
 
 ######## For new solution
-
+# Creates mapping of user sample names to the designated wells
 def map_sample_to_well(table, flavour):
     mapped_plate = pd.DataFrame.from_dict(plate_wells_mapping)
 
@@ -229,13 +228,14 @@ def map_sample_to_well(table, flavour):
     return df
 
 
-
+# Simply concatenates DFs and resets indexes
 def stack_data_frames(dfs):
     return pd.concat([df for df in dfs]).reset_index(drop=True)
 
 
 
 
+# Helper function supporting migrate_sample_name(), compares well position
 def compare_rows(complete, user):
     traslated_dict = user.T.to_dict()
     traslated_arr_of_dict = [traslated_dict[x] for x in range(len(traslated_dict))]
@@ -256,7 +256,7 @@ def compare_rows(complete, user):
 
 
 
-
+# Map user's sample names to the large pre-built sample sheet
 def migrate_sample_name(complete, user):
     match = False
     name = None
@@ -267,6 +267,7 @@ def migrate_sample_name(complete, user):
 
 
 
+# Remove rows that start with double underscore from complete sample sheet DF
 def filter_df(df):
     df2 = df[~df['Sample_Name'].str.startswith('__')]
     df2 = df2.reset_index(drop=True)
@@ -275,6 +276,33 @@ def filter_df(df):
 
 
 
+# Wrapper function for new solution
+def finalise_sample_sheet(sheet, machinery, project_name, experiment_name='', additional_comments='', complete=False):
+    header = None
+    filename=None
+    if machinery == 'hi_seq':
+        header = make_hiseq_header()
+        filename = f'{project_name}_SR_HS{"_all_primers" if complete else ""}.csv'
+    elif machinery == 'mini_seq':
+        header = make_miniseq_header(experiment_name)
+        sheet = sheet[['Sample_ID', 'Description', 'I7_Index_ID', 'index', 'I5_Index_ID', 'index2', 'Sample_Project']]
+        filename = f'{project_name}_MiniSeq{"_all_primers" if complete else ""}.csv'
+    elif machinery == 'mi_seq':
+        header = make_miseq_header(project_name, experiment_name, additional_comments)
+        filename = f'{project_name}_SR_MS{"_all_primers" if complete else ""}.csv'
+    elif machinery == 'next_seq':
+        header = make_nextseq_header(project_name, experiment_name, additional_comments)
+        sheet['index2'] = sheet['I5_Index_ID'].map(f_primers_to_reverse_complement)
+        filename = f'{project_name}_PE_NS{"_all_primers" if complete else ""}.csv'
+    else:
+        raise Exception('I do not recognise this machinery instrument!')
+
+    
+    with open(filename, 'w') as file:
+        file.write(header)
+        sheet.to_csv(file, index=False, header=False)
+
+    print('DONE') # Or return some kind of feedback to dash
 
 
 
