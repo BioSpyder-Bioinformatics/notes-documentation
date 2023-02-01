@@ -202,6 +202,9 @@ def check_table(table):
     total_samples=len(cells)
     unique_sample_names=len(set(cells))
     something_wrong = len(to_change) > 0 or total_samples != unique_sample_names
+
+    # Check what type of plate it is and return it in the dict!
+    plate_type = ''
     
     specs = dict(blanks = blanks, positive_controls = pos_controls, negative_controls=neg_controls, to_change = to_change, total_samples=total_samples, unique_sample_names=unique_sample_names, something_wrong=something_wrong)
     return specs
