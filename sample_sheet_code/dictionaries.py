@@ -44,16 +44,6 @@ different_24_dict = {
         'NoIndex1': 'blank',
         'NoIndex2': 'blank'
             },
-    'R05': {
-        'F01': 'blank',
-        'F02': 'blank',
-        'F03': 'blank',
-        'F04': 'blank',
-        'F05': 'blank',
-        'F06': 'blank',
-        'NoIndex1': 'blank',
-        'NoIndex2': 'blank'
-            },
     'NoIndex': {
         'F01': 'blank',
         'F02': 'blank',
@@ -122,7 +112,17 @@ different_24_dict = {
         'F06': 'blank',
         'NoIndex1': 'blank',
         'NoIndex2': 'blank'
-        }
+        },
+    'NoIndex.7': {
+        'F01': 'blank',
+        'F02': 'blank',
+        'F03': 'blank',
+        'F04': 'blank',
+        'F05': 'blank',
+        'F06': 'blank',
+        'NoIndex1': 'blank',
+        'NoIndex2': 'blank'
+        },
     }
 
 standard_48_dict = {}
@@ -175,14 +175,6 @@ different_48_dict = {'R01': {'F01': 'sample',
   'F06': 'sample',
   'F07': 'sample',
   'F08': 'sample'},
- 'R07': {'F01': 'blank',
-  'F02': 'blank',
-  'F03': 'blank',
-  'F04': 'blank',
-  'F05': 'blank',
-  'F06': 'blank',
-  'F07': 'blank',
-  'F08': 'blank'},
  'NoIndex': {'F01': 'blank',
   'F02': 'blank',
   'F03': 'blank',
@@ -222,7 +214,16 @@ different_48_dict = {'R01': {'F01': 'sample',
   'F05': 'blank',
   'F06': 'blank',
   'F07': 'blank',
-  'F08': 'blank'}}
+  'F08': 'blank'},
+  'NoIndex.5': {'F01': 'blank',
+  'F02': 'blank',
+  'F03': 'blank',
+  'F04': 'blank',
+  'F05': 'blank',
+  'F06': 'blank',
+  'F07': 'blank',
+  'F08': 'blank'}
+  }
 
 standard_96_dict = {
     'R01': {'F01': 'nan',
