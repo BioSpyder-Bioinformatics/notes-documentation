@@ -310,3 +310,61 @@ def finalise_sample_sheet(sheet, machinery, project_name, experiment_name='', ad
 
 
 
+
+######################################################################################## END HELPER FUNCTIONS - START WRAPPER
+
+def wrapper_make_sample_sheet(plate_type, how_many, project_name, file_format='csv'):
+    sample_sheet = None
+    filename = ''
+    # If the plate type is 96, call the function for 96, if it's not check, which one and give the right boolean to the 24/48 function
+    if plate_type == '96':
+        filename=f'96_well_template_{project_name}.{file_format}'
+        sample_sheet = make_96_well_sample_sheet(filename, how_many)
+    elif plate_type == '24':
+        filename=f'24_well_template_{project_name}.{file_format}'
+        sample_sheet = make_24_48_well_sample_sheet(filename, True)
+    elif plate_type == '48':
+        filename=f'48_well_template_{project_name}.{file_format}'
+        sample_sheet = make_24_48_well_sample_sheet(filename, False)
+    else:
+        print('I DO NOT RECOGNISE THIS PLATE TYPE')
+        raise Exception('Wrong plate format required!')
+    
+    if file_format == 'xlsx':
+        # Wrapper to write file in xlsx
+        pass
+        # sample_sheet = wrapper(sample_sheet)
+
+
+    #Check that file does not exist already
+    # if os.path.isfile(filename):
+    #     raise Exception('This file already exists') 
+
+    # Save in file the string for the sample sheet (this will probably need to be modified for Dash, not sure how it handles the download of files yet)
+    # with open(filename, 'w') as file:
+    #     file.write(sample_sheet)
+    return filename, sample_sheet
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
