@@ -94,8 +94,8 @@ def get_tables(sample_sheet):
     #dfs to be
     dfs = []
     # Slice the sample sheet so that the recurring 10th line gets skipped (the empty one)
-    for x in range(8, df_len+1, 10):
-        low_end = 0 if x == 8 else x - 8
+    for x in range(9, df_len+2, 11):
+        low_end = 0 if x == 9 else x - 9
         dfs.append(sample_sheet.iloc[low_end:x, :])
     return dfs
 
