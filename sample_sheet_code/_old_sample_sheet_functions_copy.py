@@ -285,6 +285,8 @@ def filter_df(df):
 
 ######################################################################################## END HELPER FUNCTIONS - START WRAPPER
 
+
+
 def wrapper_make_sample_sheet(plate_type, how_many, project_name, file_format='csv'):
     sample_sheet = None
     filename = ''
@@ -357,8 +359,6 @@ def finalise_sample_sheet(sheet, machinery, project_name, experiment_name='', ad
 
 
 
-##############################################
-# NEW WRAPPERS
 
 
 
