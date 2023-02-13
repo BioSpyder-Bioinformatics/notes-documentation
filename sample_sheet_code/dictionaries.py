@@ -1637,8 +1637,8 @@ plate_l_layout = {'A01': ('F946', 'R936'),
  'H12': ('F964', 'R996')}
 
 flavours_list = {
-    '24':plate_24_wells_layout,
-    '48':plate_48_wells_layout,
+    'tf':plate_24_wells_layout,
+    'fe':plate_48_wells_layout,
     'E':plate_e_layout,
     'F':plate_f_layout,
     'G':plate_g_layout,
