@@ -217,9 +217,47 @@ def add_tf_fe(sample_sheet, tuple, reversed):
     return merged
 
 
+# Function to check the presence of duplicates among all tables
+def check_no_duplicates_or_unwanted_chars(tables):
+    tables_cells = [list(table.values.ravel()) for key, table in tables.items()]
+    all_cells = []
+    for cells in tables_cells:
+        all_cells.extend(iter(cells))
+
+    # No unwanted cells to start with
+    unwanted = False
+    # If there are no duplicates, check that there are no unwanted characters
+    for cell in list(all_cells):
+        # Check for regex
+        match = re.findall(r'\W', cell)#######################################################################################################################################################################################################################################################################################################
+        if match:
+            # If unwanted is still false, make it a dict
+            if not unwanted:
+                unwanted = {'unwanted': [cell]}
+            # If already is a dict, append the unwanted cell
+            else:
+                unwanted['unwanted'].append(cell)
+    # If any unwanted cell, return it
+    if unwanted:
+        return unwanted
 
 
+    # If the length of the list is not the same as the set there are duplicates
+    duplicates = len(all_cells) != len(set(all_cells))
 
+    # If there are duplicates, remove single-occurrence cells and return duplicates
+    if duplicates:
+        for x in set(all_cells):
+            all_cells.remove(x)
+
+        # Key value pair the repeats with the occurrences
+        occurrences = {x: all_cells.count(x)+1 for x in set(all_cells)}
+
+        # Return duplicate cells
+        return occurrences
+
+    # If there are unwanted cells return it, else return false
+    return False
 
 
 ##########################
@@ -290,12 +328,12 @@ def wrapper_handle_upload(content, filename):
     
     # Handle file
     # UNCOMMENT THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    content_type, content_string = content.split(',')
-    decoded_content = b64decode(content_string)
-    file_content = StringIO(decoded_content.decode('utf-8')).readlines()
+    # content_type, content_string = content.split(',')
+    # decoded_content = b64decode(content_string)
+    # file_content = StringIO(decoded_content.decode('utf-8')).readlines()
 
     # Only for debug
-    # file_content = content
+    file_content = content
 
 
     # Slice metadata eg first 3 lines
@@ -314,7 +352,10 @@ def wrapper_handle_upload(content, filename):
     # Perform checks on tables
     checks_tables = {key:check_table(value) for key, value in tables.items()}
 
-    return tables, checks_tables, metadata_dict
+    # Get general check report
+    report = check_no_duplicates_or_unwanted_chars(tables)
+
+    return tables, checks_tables, metadata_dict, report
 
 
 
