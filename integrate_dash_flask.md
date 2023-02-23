@@ -63,8 +63,28 @@ Run app:
 
 
 
+(For reference login.html)
+```html
+{% extends 'bootstrap/base.html' %} <!-- This is for the bootstrap theme -->
+{% import 'bootstrap/wtf.html' as wtf %} <!-- For the input fields -->
+
+<!-- Title of the page -->
+{% block title %} Login {% endblock %}
+
+<!-- Block for page itself -->
+{% block content %}
+
+<!-- Protects against some sort of cyberattack related to form submission -->
+{{ form.hidden_tag() }}
+
+{{ wtf.form_field(form.email) }}
+{{}}
 
 
+
+{% endblock %}
+
+```
 
 
 
