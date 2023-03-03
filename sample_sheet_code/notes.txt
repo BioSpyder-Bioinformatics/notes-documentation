@@ -16,5 +16,13 @@ Do need:
 - Add some tests? What is worth testing?
 
 
-ASK SALVO
-- 48-24 wells indexes have some of the 800 series!!
+!!!
+- Standardise headers based on what graeme said
+- Add the options for the different machineries
+- Have a look at implementing a report in temposeqportal
+
+- The plate flavours should have more self-explaining names! eg e = Plate_E
+- Need to allow th
+
+
+
