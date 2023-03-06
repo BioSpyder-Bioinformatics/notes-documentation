@@ -22,7 +22,7 @@ Do need:
 - Have a look at implementing a report in temposeqportal
 
 - The plate flavours should have more self-explaining names! eg e = Plate_E
-- Need to allow th
+- Need to allow - 
 
 
 
