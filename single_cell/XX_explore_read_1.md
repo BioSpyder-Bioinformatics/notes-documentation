@@ -31,6 +31,7 @@ On website meme-suite.org, using the tool Meme Motif Search:
 	+ Got a fasta file by taking the aligned reads with Samtools, getting the head, and searching the identifier in the read 2 files
 	+ Capture the identifier and part of the read using grep (first line only)
 	+ Append all this to file
+	+ `zcat`
 
 - On motif page, upload the fasta file (or copy paste text) and start the search
 
