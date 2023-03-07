@@ -115,8 +115,9 @@ def compare_rows(complete, user):
     traslated_dict = user.T.to_dict()
     traslated_arr_of_dict = [traslated_dict[x] for x in range(len(traslated_dict))]
 
-    # Get from complete DF well name the plate flavor and well position (_ is placeholder)
-    _, plate, well = complete.strip('_').split('_')
+    # Get from complete DF well name the plate flavor and well position
+    p, flavour, well = complete.strip('_').split('_')
+    plate = f'{p}_{flavour}'
 
     #Make case 
     match = False
@@ -129,11 +130,12 @@ def compare_rows(complete, user):
        
     return name if match else complete
 
+
 # Migrate sample name
 # Map user's sample names to the large pre-built sample sheet
 def migrate_sample_name(complete, user):
-    match = False
-    name = None
+    # match = False
+    # name = None
     
     complete['Sample_Name'] = complete['Sample_Name'].apply(lambda x: compare_rows(x, user))
     #pd.DataFrame.apply(compare_rows(complete.iterrows(), user))
@@ -158,7 +160,7 @@ def get_sample_sheet_body(tables, complete):
     complete_sample_sheet = pd.read_csv(StringIO(complete_sample_sheet_string), index_col=0)
 
     # Map sample names based on well position
-    mapped_sheets = [map_sample_to_well(table, flavour.capitalize()) for flavour, table in tables.items()]
+    mapped_sheets = [map_sample_to_well(table, flavour) for flavour, table in tables.items()]
 
     # Concatenate sample sheets
     user_sample_sheet = stack_data_frames(mapped_sheets)
@@ -195,10 +197,8 @@ def add_tf_fe(sample_sheet, tuple, reversed):
     # Else drop index2_reverse
 
     if reversed:
-        print('reversed')
         clean_plate = clean_plate.drop(columns=['index2'])
         clean_plate = clean_plate.rename(columns={'index2_reverse': 'index2'})
-        print(clean_plate.keys())
 
     else:
         clean_plate.drop(columns=['index2_reverse'], inplace=True)
@@ -228,8 +228,8 @@ def check_no_duplicates_or_unwanted_chars(tables):
     unwanted = False
     # If there are no duplicates, check that there are no unwanted characters
     for cell in list(all_cells):
-        # Check for regex
-        match = re.findall(r'[^a-zA-Z0-9_-]', cell)#######################################################################################################################################################################################################################################################################################################
+        # Check for regex (checks for non-word characters)
+        match = re.findall(r'[^a-zA-Z0-9_-]', cell)
         if match:
             # If unwanted is still false, make it a dict
             if not unwanted:
@@ -240,7 +240,6 @@ def check_no_duplicates_or_unwanted_chars(tables):
     # If any unwanted cell, return it
     if unwanted:
         return unwanted
-
 
     # If the length of the list is not the same as the set there are duplicates
     duplicates = len(all_cells) != len(set(all_cells))
@@ -260,6 +259,8 @@ def check_no_duplicates_or_unwanted_chars(tables):
     return False
 
 
+
+
 ##########################
 ######## WRAPPER FUNCTIONS
 
@@ -273,6 +274,10 @@ def wrapper_make_template(selection, project_name, experiment_name, additional_c
     sample_sheet = ''
     filename = ''
 
+    # Handle empty filename
+    project_name = project_name if project_name != '' else 'unnamed_project'
+        
+
     # Iterate through the selection, if a key is true, add it to the sample sheet.
     # If the key is tf (24) or fe (48), handle it accordingle
 
@@ -281,11 +286,11 @@ def wrapper_make_template(selection, project_name, experiment_name, additional_c
         if not value:
             continue
         # If the key is 24/48 act accordingly
-        if flavour == 'tf':
+        if flavour == 'Plate_24':
             import_df = pd.DataFrame.from_dict(different_24_dict)
             string = import_df.to_csv(index=False)
             
-        elif flavour == 'fe':
+        elif flavour == 'Plate_48':
             import_df = pd.DataFrame.from_dict(different_48_dict)
             string = import_df.to_csv(index=False)
         
@@ -315,19 +320,9 @@ def wrapper_make_template(selection, project_name, experiment_name, additional_c
 
 # Obtain information from the upload file and extract tables, reports and metadata
 def wrapper_handle_upload(content, filename):
-    """Obtain information from the upload file and extract tables, reports and metadata"""
-
-    #Checks before the function starts for filename and content
-    if filename is not None and filename.split('.')[1] != 'csv':
-        #return genericLabelWrapper("Please only upload 'csv' files"), None
-        return "Please only upload 'csv' files", None, None
-    if content is None:
-        # return genericLabelWrapper('The content of the file you uploaded is not valid'), None
-        return 'The content of the file you uploaded is not valid', None, None
-        
+    """Obtain information from the upload file and extract tables, reports and metadata. This function also handles the decoding of the file content."""    
     
     # Handle file
-    # UNCOMMENT THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     # content_type, content_string = content.split(',')
     # decoded_content = b64decode(content_string)
     # file_content = StringIO(decoded_content.decode('utf-8')).readlines()
@@ -370,51 +365,60 @@ def wrapper_create_complete_sample_sheet(tables, complete, machinery, project, e
     reverse_complement = False
 
     # Retain 24/48 well layouts and produce the sample sheet for the rest
-    if 'tf' in tables.keys():
-        tf_or_fe = ('tf', tables['tf']) 
-        del tables['tf']
-    if 'fe' in tables.keys():
-        tf_or_fe = ('fe', tables['fe']) 
-        del tables['fe']
+    if 'Plate_24' in tables.keys():
+        tf_or_fe = ('Plate_24', tables['Plate_24']) 
+        del tables['Plate_24']
+    if 'Plate_48' in tables.keys():
+        tf_or_fe = ('Plate_48', tables['Plate_48']) 
+        del tables['Plate_48']
 
     # Get body of sample sheet
     sample_sheet_body = get_sample_sheet_body(tables, complete)
 
-
     # Make header and adapt file based on machine chosen
     header = None
     filename=None
+    # If the filename has spaces in it, replace it with underscores
+    project_name = project if ' ' not in project else project.replace(' ', '_')
     # 
     if machinery == 'hi_seq':
         # The header is basically empty
         header = make_hiseq_header()
-        filename = f'{project}_SR_HS{"_all_primers" if complete else ""}.csv'
+        filename = f'{project_name}_SR_HS{"_all_primers" if complete else ""}.csv'
         # File does not change
     #
     elif machinery == 'mini_seq':
         # Header only has experiment 
         header = make_miniseq_header(experiment)
-        # Refactor the columns to reduce them to the required number
-        sheet = sheet[['Sample_ID', 'Description', 'I7_Index_ID', 'index', 'I5_Index_ID', 'index2', 'Sample_Project']]
-        filename = f'{project}_MiniSeq{"_all_primers" if complete else ""}.csv'
+        filename = f'{project_name}_MiniSeq{"_all_primers" if complete else ""}.csv'
     #
     elif machinery == 'mi_seq':
         # Nothing special
         header = make_miseq_header(project, experiment, comments)
-        filename = f'{project}_SR_MS{"_all_primers" if complete else ""}.csv'
+        filename = f'{project_name}_SR_MS{"_all_primers" if complete else ""}.csv'
     #
     elif machinery == 'next_seq':
         header = make_nextseq_header(project, experiment, comments)
         # Next seq requires reverse I5, map the index names to the correct sequence from the dictionary
         sample_sheet_body['index2'] = sample_sheet_body['I5_Index_ID'].map(f_primers_to_reverse_complement)
         reverse_complement = True
-        filename = f'{project}_PE_NS{"_all_primers" if complete else ""}.csv'
+        filename = f'{project_name}_PE_NS{"_all_primers" if complete else ""}.csv'
     else:
         raise Exception('I do not recognise this machinery instrument!')
 
     # Append 24/48 plate to it
     if tf_or_fe:
         sample_sheet_body = add_tf_fe(sample_sheet_body, tf_or_fe, reverse_complement)
+
+    # If miniseq need to refactor cols
+    if machinery == 'mini_seq':
+        # Swap sample name and sample ID
+        sample_sheet_body.drop(columns=['Sample_ID'], inplace=True)
+        sample_sheet_body['Sample_ID'] = sample_sheet_body['Sample_Name']
+
+        # Refactor the columns to reduce them to the required number
+        sample_sheet_body = sample_sheet_body[['Sample_ID', 'Description', 'I7_Index_ID', 'index', 'I5_Index_ID', 'index2', 'Sample_Project']]
+    
 
     text = header + sample_sheet_body.to_csv(index=False, header=False)
 
