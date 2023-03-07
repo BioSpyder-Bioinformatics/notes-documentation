@@ -204,7 +204,7 @@ def add_tf_fe(sample_sheet, tuple, reversed):
         clean_plate.drop(columns=['index2_reverse'], inplace=True)
 
     # Declare missing columns empty eg Sample_ID, Sample_Project and Description
-    clean_plate['Sample_ID'], clean_plate['Sample_Project'], clean_plate['Description'], = '','',''
+    clean_plate['Sample_ID'], clean_plate['Sample_Project'], clean_plate['Description'], = '','','no_description'
 
     # Order columns as per sample sheet
     clean_plate = clean_plate[["Sample_ID","Sample_Name","Sample_Plate","Sample_Well","I7_Index_ID","index","I5_Index_ID","index2","Sample_Project","Description"]]
@@ -357,74 +357,54 @@ def wrapper_handle_upload(content, filename):
 
 
 
-# Get the complete sample sheet
+# Wrapper create complete sample sheet!!
 def wrapper_create_complete_sample_sheet(tables, complete, machinery, project, experiment, comments):
+    # Declare list of machineries based on required I5 index
+    possible_machinery_selection_forward_strand = ['mini_seq_standard', 'mi_seq', 'hi_seq_2500', 'hi_seq_2000','nova_seq_6000_v_1.5']
+    possible_machinery_selection_reverse_strand = ['iSeq', 'next_seq_system', 'hi_seq_x', 'hi_seq_4000', 'hi_seq_3000', 'mini_seq', 'nova_seq_6000_v_1.0']
+
+    #Determine if the reverse complement is required!
+    if machinery in possible_machinery_selection_forward_strand:
+        reverse_complement = False
+    elif machinery in possible_machinery_selection_reverse_strand:
+        reverse_complement = True
+    else:
+        raise Exception('Machinery not recognised!')
+    
+
     # Handle the presence of 24/48 plates
     tf_or_fe = None
-    # Need to flag if the reverse complement is required
-    reverse_complement = False
-
-    # Retain 24/48 well layouts and produce the sample sheet for the rest
+    # Retain 24/48 well layouts, if any, and produce the sample sheet for the rest before
     if 'Plate_24' in tables.keys():
         tf_or_fe = ('Plate_24', tables['Plate_24']) 
         del tables['Plate_24']
     if 'Plate_48' in tables.keys():
         tf_or_fe = ('Plate_48', tables['Plate_48']) 
         del tables['Plate_48']
+    
+    # Make header from standard one
+    header = make_generic_header(project, experiment, comments, machinery)
 
     # Get body of sample sheet
     sample_sheet_body = get_sample_sheet_body(tables, complete)
 
-    # Make header and adapt file based on machine chosen
-    header = None
-    filename=None
+    # Make filename string starting from project name
     # If the filename has spaces in it, replace it with underscores
     project_name = project if ' ' not in project else project.replace(' ', '_')
-    # 
-    if machinery == 'hi_seq':
-        # The header is basically empty
-        header = make_hiseq_header()
-        filename = f'{project_name}_SR_HS{"_all_primers" if complete else ""}.csv'
-        # File does not change
-    #
-    elif machinery == 'mini_seq':
-        # Header only has experiment 
-        header = make_miniseq_header(experiment)
-        filename = f'{project_name}_MiniSeq{"_all_primers" if complete else ""}.csv'
-    #
-    elif machinery == 'mi_seq':
-        # Nothing special
-        header = make_miseq_header(project, experiment, comments)
-        filename = f'{project_name}_SR_MS{"_all_primers" if complete else ""}.csv'
-    #
-    elif machinery == 'next_seq':
-        header = make_nextseq_header(project, experiment, comments)
-        # Next seq requires reverse I5, map the index names to the correct sequence from the dictionary
+    filename = f'{project_name}_sample_sheet{"_all_primers" if complete else ""}.csv'
+    
+    # IF the machinery requires REVERSE I5, substitute it in the sample sheet!
+    # (map index names to correct sequence from the dictionary)
+    if reverse_complement:
         sample_sheet_body['index2'] = sample_sheet_body['I5_Index_ID'].map(f_primers_to_reverse_complement)
-        reverse_complement = True
-        filename = f'{project_name}_PE_NS{"_all_primers" if complete else ""}.csv'
-    else:
-        raise Exception('I do not recognise this machinery instrument!')
 
-    # Append 24/48 plate to it
+    # Append 24/48 plate to it, if any
     if tf_or_fe:
         sample_sheet_body = add_tf_fe(sample_sheet_body, tf_or_fe, reverse_complement)
 
-    # If miniseq need to refactor cols
-    if machinery == 'mini_seq':
-        # Swap sample name and sample ID
-        sample_sheet_body.drop(columns=['Sample_ID'], inplace=True)
-        sample_sheet_body['Sample_ID'] = sample_sheet_body['Sample_Name']
-
-        # Refactor the columns to reduce them to the required number
-        sample_sheet_body = sample_sheet_body[['Sample_ID', 'Description', 'I7_Index_ID', 'index', 'I5_Index_ID', 'index2', 'Sample_Project']]
+    # At this point in the old versions, you'd reduce the number of cols for mini_seq, given that we're standardising we won't (won't break the pipeline)
     
-
+    #Prepare text to return
     text = header + sample_sheet_body.to_csv(index=False, header=False)
 
     return filename, text
-
-
-
-
-

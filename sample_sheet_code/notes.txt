@@ -1,28 +1,16 @@
 Do need:
 - Export sample sheet template in xlsx (Make template with cells in red)
-- Support 96 + 48 tables
-
 - On reupload - support both csv and xlsx formats
 - On reupload - get_tables() needs to recognise if the table is 24/48/96
-    + Also it's best to do the sample names checks here!
-
-
 - Check number of samples loaded. (In dash you need to confirm with the user this was the right amount added)
 	- For multiple 96 plates, specific number of controls!!
 	- Blanks get ignored
-	
-- In dash, you don't need to check if the file exists in the directory!!
 
 - Add some tests? What is worth testing?
 
 
-!!!
-- Standardise headers based on what graeme said
-- Add the options for the different machineries
-- Have a look at implementing a report in temposeqportal
+# Recognise table uploaded
 
-- The plate flavours should have more self-explaining names! eg e = Plate_E
-- Need to allow - 
 
 
 
