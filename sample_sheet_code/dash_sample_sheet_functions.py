@@ -51,7 +51,7 @@ def get_tables(sample_sheet):
 
 
 # Checks if the sample names inputed by user are in line with the suggested naming convention
-def check_table(table):
+def check_table(key, table):
     cells = list(table.values.ravel())
     blanks = 0
     pos_controls = 0
@@ -82,11 +82,20 @@ def check_table(table):
 
     total_samples=len(cells)
     unique_sample_names=len(set(cells))
+
+    # Check if there is something wrong (eg >1 well to change, or sample names are not unique)
     something_wrong = len(to_change) > 0 or total_samples != unique_sample_names
 
-    # Check what type of plate it is and return it in the dict!
-    plate_type = ''
-    
+    # Check what type of plate it is based on key
+    plate_type = key.split('_')[-1]
+
+    # If the plate is 24/48 wells, double check if something is actually wrong (they have a lot of blanks)
+    if plate_type in ['24', '48']:
+        if plate_type == '24':
+            something_wrong = len(to_change) > 0 or total_samples != unique_sample_names or blanks != 72
+        if plate_type == '48':
+            something_wrong = len(to_change) > 0 or total_samples != unique_sample_names or blanks != 48
+
     specs = dict(blanks = blanks, positive_controls = pos_controls, negative_controls=neg_controls, to_change = to_change, total_samples=total_samples, unique_sample_names=unique_sample_names, something_wrong=something_wrong)
     return specs
 
@@ -252,6 +261,8 @@ def check_no_duplicates_or_unwanted_chars(tables):
         # Key value pair the repeats with the occurrences
         occurrences = {x: all_cells.count(x)+1 for x in set(all_cells)}
 
+        occurrences.pop('blank', 'none')
+
         # Return duplicate cells
         return occurrences
 
@@ -345,7 +356,7 @@ def wrapper_handle_upload(content, filename):
     tables = get_tables(df)
 
     # Perform checks on tables
-    checks_tables = {key:check_table(value) for key, value in tables.items()}
+    checks_tables = {key:check_table(key, value) for key, value in tables.items()}
 
     # Get general check report
     report = check_no_duplicates_or_unwanted_chars(tables)
