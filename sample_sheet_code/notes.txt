@@ -1,15 +1,11 @@
 Do need:
 - Export sample sheet template in xlsx (Make template with cells in red)
 - On reupload - support both csv and xlsx formats
-- On reupload - get_tables() needs to recognise if the table is 24/48/96
 - Check number of samples loaded. (In dash you need to confirm with the user this was the right amount added)
 	- For multiple 96 plates, specific number of controls!!
 	- Blanks get ignored
 
 - Add some tests? What is worth testing?
-
-
-# Recognise table uploaded
 
 
 
