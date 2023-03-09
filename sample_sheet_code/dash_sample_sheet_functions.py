@@ -60,7 +60,7 @@ def check_table(key, table):
     to_change = []
     for cell in list(cells):
         # Check for regex
-        match = re.findall(r'(_+(?!bsnc|bspc)\w+)', cell)
+        match = re.findall(r'^(_+(?!bsnc|bspc)\w+)', cell)
         if match:
             cells.remove(cell)
             to_change.append(match[0])
