@@ -88,3 +88,4 @@ Run star alignment
 `STAR --genomeDir ./ --readFilesIn <(gunzip -c ./rat_DMF_hi_RPH_6_S54_L002_R1_001.fastq.gz) --runThreadN 8 --outSAMtype BAM SortedByCoordinate --scoreDelOpen -10000 --scoreInsOpen -10000 --outFilterMultimapNmax 1 --outFilterMismatchNmax 2 --outSAMunmapped Within --outFileNamePrefix my_alignment_`
 Produce count table 
 `featureCounts -a input.gtf -o read_count.txt my_alignment_Aligned.sortedByCoord.out.bam`
+Clean everything from temp directory other than file of interest (read_count.txt)
