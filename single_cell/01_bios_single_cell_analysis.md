@@ -2,7 +2,9 @@
 This is the entry point of the single cell analyisis!
 
 In order to perform this analysis, there a prerequisite passage, which is to concatenate the sequencing files into one per read per sample.
-`zcat filename | gzip`
+`zcat filename | gzip` (THIS IS ONLY MADE IF THERE IS 1+ RUNS TO CONCATENATE)
+
+
 
 ##### Installation
 If not installed yet, you can either copy the file from Salvo's home (/home/salvo/SingleCell/BioS_single_cell), or clone it from GitHub (better tbh, so you can pull when needed instead of copying again).
