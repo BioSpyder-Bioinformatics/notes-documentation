@@ -1,7 +1,7 @@
 # Code for the aligner part of TempOSeqPortal
 
 ### Passages
-For each FastQ(s) OR Fasta
+*For each* FastQ(s) OR Fasta
 - Make Temp folder
     + Copy in folder
         * Make GTF file
