@@ -40,7 +40,7 @@ Extra resources:
 	+ /home/salvo/annotation_files/
 
 *Command Example*
-`./BIOS_single_cell -1 read1.fastq.gz -2 read2.fastq.gz-o output_folder  -n 10000 -ht /home/salvo/bwaIndices/TempO-Seq_Human_Whole_Transcriptome_2.1.fa -a /home/salvo/annotation_files/TempO-Seq_Human_Whole_Transcriptome_2.1.gtf -species human -t 50`
+`./BIOS_single_cell -1 read1.fastq.gz -2 read2.fastq.gz -o output_folder -n 10000 -ht /home/salvo/bwaIndices/TempO-Seq_Human_Whole_Transcriptome_2.1.fa -a /home/salvo/annotation_files/TempO-Seq_Human_Whole_Transcriptome_2.1.gtf -species human -t 50`
 
 
 ### Output

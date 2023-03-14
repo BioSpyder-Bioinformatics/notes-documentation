@@ -14,7 +14,12 @@ It takes in
 	+ Species of interest (likely human)
 
 
-You get the concatenated reads and umi tables
+You get the concatenated reads and umi tables 
+IF ISSUES, remove the bottom lines of sequencing_stats.txt (>14)
+
+
+--------
+
 
 
 --------
