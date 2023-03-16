@@ -30,7 +30,7 @@ print('The following files will be included in the analysis: ', ', '.join(file_l
 
 
 
-def align(filename):
+def align_star(filename):
     print('starting ', filename)
     # Activate conda environment
     #subprocess.Popen('conda activate aligner', shell=True)
@@ -62,10 +62,11 @@ def align(filename):
 
 
 
+# Depending on the aligner chosen
 
 # For each file
 for file in file_list:
-    align(file)
+    align_star(file)
     
 
 
