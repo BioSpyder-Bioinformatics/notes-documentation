@@ -89,3 +89,4 @@ Run star alignment
 Produce count table 
 `featureCounts -a input.gtf -o read_count.txt my_alignment_Aligned.sortedByCoord.out.bam`
 Clean everything from temp directory other than file of interest (read_count.txt)
+Concatenate 7th col of tables

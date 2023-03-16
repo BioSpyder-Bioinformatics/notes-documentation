@@ -11,7 +11,6 @@ output_name = 'new_name'
 # Are the input fastq zipped?
 zipped = True
 
-# Get a list of files in directory
 
 
 
@@ -22,7 +21,10 @@ file_list = os.listdir()
 # Get the list of files in the directory (either .gz if zipped or .fastq if not zipped!)
 expected_extension = 'gz' if zipped else 'fastq'
 file_list = [file for file in file_list if file.split('.')[-1] == expected_extension]
+print('This is the file list i found!')
 
+
+# Get a list of files in directory (artificial at this point)
 file_list =["first.fastq.gz", "second.fastq.gz", "third.fastq.gz"] 
 
 print('The following files will be included in the analysis: ', ', '.join(file_list))
