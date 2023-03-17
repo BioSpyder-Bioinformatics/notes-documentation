@@ -1,8 +1,6 @@
 import os
 import subprocess
 import pandas as pd
-#For sending email
-import smtplib
 import argparse
 
 
@@ -194,30 +192,7 @@ def append_to_df(append_to, df, filename = None):
 
 
 
-# def send_email(recipient):
-#     body = 'Subject: Alignment complete \n\n' + 'Hello,\n\nYour alignment has completed!' + '\n\nRegards,\nBioSpyder Team'
-#     sender = 'biospyder_aligner@outlook.com'
-
-#     # Initialise smtp objects
-#     try:
-#         smtpObj = smtplib.SMTP('smtp-mail.outlook.com', 587)  #smtp.office365.com
-#     except Exception as e:
-#         print(e)
-#         smtpObj = smtplib.SMTP_SSL('smtp-mail.outlook.com', 465)
-
-#     smtpObj.ehlo()
-#     smtpObj.starttls()
-#     smtpObj.login('tempo-portal@biospyder.com', '8nXiM7eTW-')
-#     smtpObj.sendmail(sender, recipient, body)
-#     smtpObj.quit()
-#     print(f'Email sent to {recipient}')
-
-
-
-
-
-
-def run_aligner(aligner, reference_genome, input_directory, output_name, input_zipped=None, email=None, threads=8):
+def run_aligner(aligner, reference_genome, input_directory, output_name, input_zipped=None, threads=8):
     # User choices
 
     # Capture reference genome path 
@@ -268,8 +243,6 @@ def run_aligner(aligner, reference_genome, input_directory, output_name, input_z
     else:
         raise Exception('Aligner not recognised')
 
-    # temp_dir_list = ['temp_first', 'temp_second', 'temp_third']
-
 
     # Compile all read counts
     print('Starting compiling read count table')
@@ -304,17 +277,13 @@ def run_aligner(aligner, reference_genome, input_directory, output_name, input_z
         
     print('Processes completed')
 
-    # # Send email to the user!
-    # if email != None:
-    #     send_email(email)
+
         
 
 if __name__ == '__main__':
     # Reference index path
     # How many threads?
     # threads = 8
-    # # User email
-    # email = 'gioelemook97@gmail.com'
     # aligner = 'kallisto' #'star'
     # reference_genome = 'rat'
     # input_directory = '/home/gioele/rat_fasta/loop'
