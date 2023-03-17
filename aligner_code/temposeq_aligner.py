@@ -183,8 +183,10 @@ def append_to_df(append_to, df, filename = None):
         #remap col names
         df = df.rename(columns=rename_cols)
     else:
+        # This is specific to kallisto
+        df.est_counts = df.est_counts.astype(int)
         df = df.rename(columns={'est_counts': filename})
-
+        
     # Merge dfs
     append_to = append_to.merge(df, how='outer', on='Geneid')
 
@@ -322,7 +324,7 @@ if __name__ == '__main__':
     #Call aligner
 
     parser = argparse.ArgumentParser(description="Tool to align your TempoSeq sequences and extract a feature count table. It allows to alignment with star, bwa and kallisto")
-    parser.add_argument('-i', '--input-directory', required=True, help='Directory where the fastq files are. Input "." for current directory, or the full directory path)'
+    parser.add_argument('-i', '--input-directory', required=True, help='Directory where the fastq files are. Input "." for current directory, or the full directory path')
     parser.add_argument('-a', '--aligner', required=True, help='Select the required aligner, options: star, bwa, kallisto')
     parser.add_argument('-g', '--reference-genome', required=True, help='Select the required reference genome, options: rat_w_1.0, human_s1500_1.2, human_w_2.0, human_w_2.1, mouse_s1500_1.2, mouse_w_1.0, or give a path to .fa file') # If you add here add to index_reference_dict
     parser.add_argument('-o', '--output-name', required=True, help='Prefix for output name')
