@@ -26,7 +26,7 @@ IF ISSUES, remove the bottom lines of sequencing_stats.txt (>14)
 
 This is mainly for internal tracking, the script basically compiles all the sequencing stats into a single CSV, for it to be easier
 
-The script is `get_summary_stats.py` and you find it in /home/salvo/A_project/SingleCell/BioRad/data_analysis/get_summary_statistics.py
+The script is `get_summary_stats.py` and you find it in /home/salvo/A_project/SingleCell/BioRad/Barnyard/data_analysis/get_summary_stats.py
 
 The script requires the changing of the 'final_table' variable's directory, to the first directory of interest (eg for S01 to S20, you want to indicate S01)
 

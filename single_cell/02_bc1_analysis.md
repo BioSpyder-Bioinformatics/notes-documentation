@@ -25,6 +25,7 @@ To perform BC1 analysis:
 - Make the file with the condition and associated BC1 sequence
 	+ Get this from whoever planned the experiment (One Note or email!)
 	+ VERY IMPORTANT that the conditions' name have an underscore-number at the end (eg xxx_#). This is essential to differentiate the different wells, which otherwise, as they're named the same, would over-write one another. (This ending number gets then removed for the remainder of the analysis)
+	+ CHANGE NAME OF column Sample to Condition
 - Ready to start!
 
 
