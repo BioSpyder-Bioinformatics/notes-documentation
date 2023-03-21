@@ -1,4 +1,4 @@
-Geneid,/home/gioele/rat_fasta/cli/temp_first/alignment.bam,/home/gioele/rat_fasta/cli/temp_third/alignment.bam,/home/gioele/rat_fasta/cli/temp_second/alignment.bam
+Geneid,first,third,second
 ENSRNOT00000080234_34129,2,2,2
 ENSRNOT00000059468_34130,416,416,416
 ENSRNOT00000060258_34131,168,168,168
