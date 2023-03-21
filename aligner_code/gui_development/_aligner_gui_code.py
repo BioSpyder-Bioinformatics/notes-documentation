@@ -15,6 +15,9 @@ import tkinter.ttk as tkk # additional widgets
 # 
 
 
+# for fm in ['blue','red','yellow','green','white','black']:  
+#     tk.Frame(height = 20,width = 640,bg = fm).pack()  
+
 
 
 # Create a window -> instance of Tkinter class
