@@ -6,7 +6,7 @@ import tkinter.ttk as tkk # additional widgets
 # Button
 # Entry (allows only 1 line entry)
 # Text (allows multiline entry) 
-# Frame (rectangel used to group related widgets#
+# Frame (rectangel used to group related widgets)#
 
 # TKK also brings in
 # Progress bar
