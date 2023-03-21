@@ -1,6 +1,17 @@
 import tkinter as tk
 import tkinter.ttk as tkk
 
+########################
+# Functions
+def submit_btn():
+    output_label = tkk.Label(frame3, text='Empty')
+    output_label.grid(row=4)
+    print('hello', variable1.get(), variable2.get(), variable3.get(), variable4.get())
+
+
+
+########################
+
 
 # 3 Quadrants (frames)
 # q1 -> All dropdowns + checkbox stacked up
@@ -17,7 +28,7 @@ window.geometry("1200x800") #width x height
 
 
 # Declare frames and assign them to grid!
-frame1 = tk.LabelFrame(window, height=680, width=600, bg='red') # Play around with padding n stuff
+frame1 = tk.LabelFrame(window, height=680, width=600, bg='red', padx=170, pady=230) # Play around with padding n stuff
 frame1.grid(row=0, column=0)
 # frame1.configure(padding=5, borderwidth=2, relief='solid')
 
@@ -106,6 +117,17 @@ text6.grid(row=3, column=0, columnspan=2)
 progress_bar7 = tkk.Progressbar(frame3, length=150, maximum=100, mode='determinate')
 progress_bar7.grid(column=0, columnspan=5)
 
+# Start button 
+button8 = tkk.Button(frame3, text='Start alignment', command=submit_btn)
+button8.grid(column=6)
 
 # Start loop 
 window.mainloop()
+
+
+
+
+
+# Need to do:
+# File upload
+# Progress bar!
