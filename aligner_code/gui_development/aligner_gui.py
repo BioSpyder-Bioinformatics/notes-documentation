@@ -99,7 +99,6 @@ def submit_btn():
 
     print(output_name)
 
-    return
     # Input zipped
     # This is really a placeholder, not used anywhere
     zipped = None
