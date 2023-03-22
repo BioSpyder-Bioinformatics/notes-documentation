@@ -9,7 +9,10 @@ import time
 
 ########################
 # Functions
-def update_output(process, buffer):
+def update_output(process, buffer, files):
+    # Number of completed files
+    total_completed = 0
+    total_files = len(files)
     # Update output while the process is alive (in separate fn bc need to thread)
     while process.is_alive():
         print('alive', process.is_alive())  
@@ -17,6 +20,11 @@ def update_output(process, buffer):
         while len(buffer) > 0:
             # Pop first element and append it to output of interest
             text = buffer.pop(0)
+            # Update progress bar if keyword (this case is starting) in buffer
+            if 'Starting' in text:
+                total_completed += 1
+                progress_bar7['value'] = (total_completed/total_files)*100
+
             # Enable editing of text6
             text6['state'] = 'normal'
             # Set new text6 (1.0 is starting row 1, column 0; up to tk.END (end of text); text to set)
@@ -53,7 +61,7 @@ def submit_btn():
     process.start()
 
     # Also so the window does not freeze, updates the output separately
-    threading.Thread(target=update_output, args=[process, buffer]).start()
+    threading.Thread(target=update_output, args=[process, buffer, files]).start()
 
     print('hello', variable1.get(), variable2.get(), variable3.get(), variable4.get(), text5.get('1.0', tk.END))
 
@@ -192,7 +200,7 @@ text6.grid(row=3, column=0, columnspan=2)
 # 8 -> run button
 
 # Progress bar (spans like 4/5ths of the bottom)
-progress_bar7 = tkk.Progressbar(frame3, length=150, maximum=100, mode='determinate')
+progress_bar7 = tkk.Progressbar(frame3, length=500, maximum=100, mode='determinate')
 progress_bar7.grid(column=0, columnspan=5)
 
 # Start button 

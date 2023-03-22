@@ -132,5 +132,9 @@ def get_directory_or_files():
 
 
 ### Get input file
+```py
+from tkinter.filedialog import askopenfilenames, askdirectory
+var = askopenfilenames() # opens prompt and returns a tuple with full directory of file names
+```
 
 
