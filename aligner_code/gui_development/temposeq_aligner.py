@@ -11,6 +11,9 @@ import argparse
 # MakeGTF is now local and so are all the reference indexes -> MakeGtf path is not set in stone anymore
 # Run aligner WILL!!!!!!! gets a buffer (list) where it keeps filling on the processes! (eg 1 file completed)
 
+# To solve the space in the name issue, you could do
+# Add 'r' in front of the os strings
+# add double quotes to the paths
 
 
 # Perform alignment with aligner STAR
@@ -142,26 +145,28 @@ def align_kallisto(filename, reference_index, threads, zipped, temp_dir_list, cu
     # append it to list of temporary directories
     temp_dir_list.append(temp_dir)
     # Make temporary directory 
-    os.mkdir(f'{current_directory}/{temp_dir}/')
+    os.mkdir(fr'{current_directory}/{temp_dir}/')
     # Copy fastq file in directory
-    subprocess.Popen(f'cp {current_directory}/{filename} {current_directory}/{temp_dir}', shell=True).wait()
+    subprocess.Popen(f'cp "{current_directory}/{filename}" "{current_directory}/{temp_dir}"', shell=True).wait()
     # Move into temporary directory
-    os.chdir(f'{current_directory}/{temp_dir}')
+    os.chdir(fr'{current_directory}/{temp_dir}')
 
     #Make kallisto index
-    subprocess.Popen(f'kallisto index -i kallisto.index {reference_index}', shell=True).wait()
+    subprocess.Popen(f'kallisto index -i kallisto.index "{reference_index}"', shell=True).wait()
 
     # Expand file with zcat if zipped
     if zipped:
-        subprocess.Popen(f'gunzip -c {current_directory}/{temp_dir}/{filename} > {current_directory}/{temp_dir}/{temp_name}.fastq', shell=True).wait()
+        subprocess.Popen(f'gunzip -c "{current_directory}/{temp_dir}/{filename}" > "{current_directory}/{temp_dir}/"{temp_name}.fastq', shell=True).wait()
         filename = f'{temp_name}.fastq'
 
     # Run kallisto quantifier
-    subprocess.Popen(f'kallisto quant --single -i kallisto.index -o {current_directory}/{temp_dir} -l 50 -s 1 -t {threads} --bias --single-overhang {current_directory}/{temp_dir}/{filename}', shell=True).wait()
+    subprocess.Popen(f'kallisto quant --single -i kallisto.index -o "{current_directory}/{temp_dir}" -l 50 -s 1 -t {threads} --bias --single-overhang "{current_directory}/{temp_dir}/{filename}"', shell=True).wait()
 
     # Remove everything but abundance.tsv (the output file of interest)
     # Get file list
     file_list = os.listdir()
+
+    print(file_list)
     #Remove abundance.tsv from file list
     file_list.remove('abundance.tsv')
 
@@ -281,8 +286,9 @@ def run_aligner(aligner, reference_genome, input_directory, output_name, input_z
     # Remove all temp folders 
     for dir in temp_dir_list:
         # Do it in 2 steps just in case
-        subprocess.Popen(f'rm {current_directory}/{dir}/{"read_count.txt" if aligner != "kallisto" else "abundance.tsv"}', shell=True).wait()
-        subprocess.Popen(f'rmdir {current_directory}/{dir}/', shell=True).wait()
+        filename = "read_count.txt" if aligner != "kallisto" else "abundance.tsv"
+        subprocess.Popen(f'rm "{current_directory}/{dir}/{filename}"', shell=True).wait()
+        subprocess.Popen(f'rmdir "{current_directory}/{dir}/"', shell=True).wait()
         print('Removed temporary directory ', dir)
         
     print('Processes completed')
