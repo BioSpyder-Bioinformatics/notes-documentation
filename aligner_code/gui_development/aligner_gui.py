@@ -123,7 +123,7 @@ def submit_btn():
 
 def get_directory_or_files():
     # Connected to button, prompts the user to get the files
-    var = askopenfilenames() or askdirectory() 
+    var = askopenfilenames()# or askdirectory() 
     # Format text to display nicely
     text = ' \n'.join([x for x in var])
     # Enable editing of text5
