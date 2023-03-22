@@ -20,7 +20,7 @@ def update_output(process, buffer):
             # Enable editing of text6
             text6['state'] = 'normal'
             # Set new text6 (1.0 is starting row 1, column 0; up to tk.END (end of text); text to set)
-            text6.replace('1.0', tk.END, text)
+            text6.insert(tk.END, text+'\n')
             # Disable editing
             text6['state'] = 'disabled'
         print(buffer)  
@@ -49,7 +49,7 @@ def submit_btn():
 
     # This is so the window does not freeze
     #mock_output(files)
-    process = threading.Thread(target=mock_output, args=[files, buffer])
+    process = threading.Thread(target=mock_output, args=[files, buffer]) # Need to give a buffer to append output to
     process.start()
 
     # Also so the window does not freeze, updates the output separately
