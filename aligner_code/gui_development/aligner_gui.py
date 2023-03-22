@@ -1,13 +1,69 @@
 import tkinter as tk
 import tkinter.ttk as tkk
 import tkinter.font as tkFont
+from tkinter.filedialog import askopenfilenames, askdirectory
+from mock_functions import mock_output
+import threading
+import io
+import time
 
 ########################
 # Functions
+def update_output(process, buffer):
+    while process.is_alive():
+        print('alive', process.is_alive())  
+        print(buffer)  
+        time.sleep(1)
+
+
 def submit_btn():
+    # Retrieve variables 
+    reference_genome = variable1.get()
+    aligner = variable2.get()
+    mismatches = variable3.get()
+    threads = variable4.get()
+    # Get files from files output
+    files_text = text5.get('1.0', tk.END)
+    # Format strings
+    files = files_text.split('\n')
+    files = [file.strip() for file in files if file != '']
+    print(files)
+    # Set communicating output box
     output_label = tkk.Label(frame3, text='Empty')
+    # Assign it
     output_label.grid(row=4)
-    print('hello', variable1.get(), variable2.get(), variable3.get(), variable4.get())
+
+    # Declare string buffer to capture stdout
+    buffer = [] #io.StringIO()
+
+    # This is so the window does not freeze
+    #mock_output(files)
+    process = threading.Thread(target=mock_output, args=[files, buffer])
+    process.start()
+
+    # Also so the window does not freeze, updates the output separately
+    threading.Thread(target=update_output, args=[process, buffer]).start()
+
+    print('hello', variable1.get(), variable2.get(), variable3.get(), variable4.get(), text5.get('1.0', tk.END))
+
+
+
+def get_directory_or_files():
+    # Connected to button, prompts the user to get the files
+    var = askopenfilenames() or askdirectory() 
+    # Format text to display nicely
+    text = ' \n'.join([x for x in var])
+    # Enable editing of text5
+    text5['state'] = 'normal'
+    # Set new text5 (1.0 is starting row 1, column 0; up to tk.END (end of text); text to set)
+    text5.replace('1.0', tk.END, text)
+    # Disable editing
+    text5['state'] = 'disabled'
+    
+
+
+
+    
 
 
 ########################
@@ -100,10 +156,13 @@ spinbox4.grid(row=7)
 # Select files label + button + textbox 
 label5 = tkk.Label(frame2, text='Select directory or files', font=arial20)
 label5.grid(row=0, column=0)
-button5 = tkk.Button(frame2, text='Select')
+button5 = tkk.Button(frame2, text='Select', command=get_directory_or_files)
 button5.grid(row=0, column=1)
+# Textbox variable to be updated
 text5 = tk.Text(frame2)#, width=50, height=50)
+# Don't allow input!
 text5['state'] = 'disabled'
+
 text5.grid(row=1, column=0, columnspan=2)
 
 

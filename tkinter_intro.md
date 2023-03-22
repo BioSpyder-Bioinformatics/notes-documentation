@@ -104,5 +104,33 @@ dropdown1.grid(row=1)
 ```
 
 
+### Display text on Text
+(Usually to input text, can be hijacked to output)
+```py
+# Textbox variable to be updated
+text5 = tk.Text(frame2)#, width=50, height=50)
+# Don't allow input!
+text5['state'] = 'disabled'
+
+
+# Function assigned to a button. Gets input from somewhere else and outputs the result in text box
+def get_directory_or_files():
+    # Connected to button, prompts the user to get the files
+    var = askopenfilenames() or askdirectory() 
+    # Format text to display nicely
+    text = ' \n'.join([x for x in var])
+    # Enable editing of text5
+    text5['state'] = 'normal'
+    # Set new text5 (1.0 is starting row 1, column 0; up to tk.END (end of text); text to set)
+    text5.replace('1.0', tk.END, text)
+    # Disable editing
+    text5['state'] = 'disabled'
+
+```
+
+
+
+
+### Get input file
 
 
