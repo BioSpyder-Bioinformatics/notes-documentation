@@ -10,8 +10,19 @@ import time
 ########################
 # Functions
 def update_output(process, buffer):
+    # Update output while the process is alive (in separate fn bc need to thread)
     while process.is_alive():
         print('alive', process.is_alive())  
+        # If the buffer is longer than one, consume it and append it to output of interest
+        while len(buffer) > 0:
+            # Pop first element and append it to output of interest
+            text = buffer.pop(0)
+            # Enable editing of text6
+            text6['state'] = 'normal'
+            # Set new text6 (1.0 is starting row 1, column 0; up to tk.END (end of text); text to set)
+            text6.replace('1.0', tk.END, text)
+            # Disable editing
+            text6['state'] = 'disabled'
         print(buffer)  
         time.sleep(1)
 
