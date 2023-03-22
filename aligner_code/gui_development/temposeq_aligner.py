@@ -7,6 +7,7 @@ import argparse
 # CHANGES:
 # Removed dictionary of indexes 
 # Removed file list handling
+# Changed zcat with gunzip -c
 # MakeGTF is now local and so are all the reference indexes -> MakeGtf path is not set in stone anymore
 # Run aligner WILL!!!!!!! gets a buffer (list) where it keeps filling on the processes! (eg 1 file completed)
 
@@ -43,7 +44,7 @@ def align_star(filename, reference_index, threads, zipped, temp_dir_list, curren
 
     # Expand file with zcat if zipped
     if zipped:
-        subprocess.Popen(f'zcat {current_directory}/{temp_dir}/{filename} > {current_directory}/{temp_dir}/{temp_name}.fastq', shell=True).wait()
+        subprocess.Popen(f'gunzip -c {current_directory}/{temp_dir}/{filename} > {current_directory}/{temp_dir}/{temp_name}.fastq', shell=True).wait()
         filename = f'{temp_name}.fastq'
 
     # Run STAR alignment
@@ -101,7 +102,7 @@ def align_bwa(filename, reference_index, threads, zipped, temp_dir_list, current
 
     # Expand file with zcat if zipped
     if zipped:
-        subprocess.Popen(f'zcat {current_directory}/{temp_dir}/{filename} > {current_directory}/{temp_dir}/{temp_name}.fastq', shell=True).wait()
+        subprocess.Popen(f'gunzip -c {current_directory}/{temp_dir}/{filename} > {current_directory}/{temp_dir}/{temp_name}.fastq', shell=True).wait()
         filename = f'{temp_name}.fastq'
 
     # Align with BWA
@@ -152,7 +153,7 @@ def align_kallisto(filename, reference_index, threads, zipped, temp_dir_list, cu
 
     # Expand file with zcat if zipped
     if zipped:
-        subprocess.Popen(f'zcat {current_directory}/{temp_dir}/{filename} > {current_directory}/{temp_dir}/{temp_name}.fastq', shell=True).wait()
+        subprocess.Popen(f'gunzip -c {current_directory}/{temp_dir}/{filename} > {current_directory}/{temp_dir}/{temp_name}.fastq', shell=True).wait()
         filename = f'{temp_name}.fastq'
 
     # Run kallisto quantifier
@@ -223,6 +224,9 @@ def run_aligner(aligner, reference_genome, input_directory, output_name, input_z
     # Capture environment variables:
     # !!! if you move this getcwd, change the align() fn to exit the temporary directory every time as this will change otherwise and nest directories into each others 
     current_directory = input_directory or os.getcwd()
+
+    # Remove trailing '/' from current directory if any
+    current_directory = current_directory.removesuffix('/')
     
     # Replaces old format of inputting files
     file_list = specific_files

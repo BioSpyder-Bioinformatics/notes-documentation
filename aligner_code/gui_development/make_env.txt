@@ -1,2 +1,2 @@
-conda install -c bioconda subread star kallisto bwa samtools
+conda install -c bioconda samtools subread star kallisto bwa 
 conda install pandas

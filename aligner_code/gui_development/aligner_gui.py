@@ -94,7 +94,7 @@ def submit_btn():
     threads = variable4.get()
     
     # Output name
-    output_name = 'Standard'
+    output_name = 'standard_kallisto'
 
     # Input zipped
     # This is really a placeholder, not used anywhere
