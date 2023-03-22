@@ -48,14 +48,14 @@ def update_output(process, buffer, files):
             # Update progress bar if keyword (this case is starting) in buffer
             if 'Starting' in text:
                 total_completed += 1
-                progress_bar7['value'] = (total_completed/total_files)*100
+                progress_bar8['value'] = (total_completed/total_files)*100
 
-            # Enable editing of text6
-            text6['state'] = 'normal'
-            # Set new text6 (1.0 is starting row 1, column 0; up to tk.END (end of text); text to set)
-            text6.insert(tk.END, text+'\n')
+            # Enable editing of text7
+            text7['state'] = 'normal'
+            # Set new text7 (1.0 is starting row 1, column 0; up to tk.END (end of text); text to set)
+            text7.insert(tk.END, text+'\n')
             # Disable editing
-            text6['state'] = 'disabled'
+            text7['state'] = 'disabled'
         print(buffer)  
         time.sleep(1)
 
@@ -66,12 +66,12 @@ def get_files():
     var = askopenfilenames()# or askdirectory() 
     # Format text to display nicely
     text = ' \n'.join([x for x in var])
-    # Enable editing of text5
-    text5['state'] = 'normal'
-    # Set new text5 (1.0 is starting row 1, column 0; up to tk.END (end of text); text to set)
-    text5.replace('1.0', tk.END, text)
+    # Enable editing of text6
+    text6['state'] = 'normal'
+    # Set new text6 (1.0 is starting row 1, column 0; up to tk.END (end of text); text to set)
+    text6.replace('1.0', tk.END, text)
     # Disable editing
-    text5['state'] = 'disabled'
+    text6['state'] = 'disabled'
 
 
 # Main function controlling everything
@@ -94,15 +94,19 @@ def submit_btn():
     threads = variable4.get()
     
     # Output name
-    output_name = 'standard_kallisto'
+    output_name = entry5.get() if entry5.get() != '' else 'output'
 
+
+    print(output_name)
+
+    return
     # Input zipped
     # This is really a placeholder, not used anywhere
     zipped = None
 
 
     # Get files from files output (in string format)
-    files_text = text5.get('1.0', tk.END)
+    files_text = text6.get('1.0', tk.END)
     # Format strings
     files = files_text.split('\n')
     files = [file.strip() for file in files if file != ''] # strip spaces and remove empty files
@@ -115,15 +119,15 @@ def submit_btn():
 
     # If there are no files, let the user know that you need at least one!!
     if len(files) < 1 :
-        text6['state'] = 'normal'
-        text6.replace('1.0', tk.END, 'Please select at least one file to start!')
-        text6['state'] = 'disabled'
+        text7['state'] = 'normal'
+        text7.replace('1.0', tk.END, 'Please select at least one file to start!')
+        text7['state'] = 'disabled'
         return
     else:
-        # Clean up text6 
-        text6['state'] = 'normal'
-        text6.replace('1.0', tk.END, '')
-        text6['state'] = 'disabled'
+        # Clean up text7 
+        text7['state'] = 'normal'
+        text7.replace('1.0', tk.END, '')
+        text7['state'] = 'disabled'
 
 
     # Get directory where files are, and remove relative path from file names (from first file only)
@@ -242,47 +246,53 @@ spinbox4 = tkk.Spinbox(frame1, from_=1, to=50, textvariable=variable4)
 spinbox4.grid(row=7)
 
 
+# Output name variable
+label5 = tkk.Label(frame1, text='Define output prefix:', font=arial20)
+label5.grid(row=8)
+
+entry5 = tkk.Entry(frame1, width=50)
+entry5.grid(row=9)
 #----------------------------------------------------------
 
 # Quadrant 2 (column 1) -----------------------------------
 # Elements by # 
-# 5 -> select files 
-# 6 -> progress output#
+# 6 -> select files 
+# 7 -> progress output#
 
 # Select files label + button + textbox 
-label5 = tkk.Label(frame2, text='Select directory or files', font=arial20)
-label5.grid(row=0, column=0)
-button5 = tkk.Button(frame2, text='Select', command=get_files)
-button5.grid(row=0, column=1)
+label6 = tkk.Label(frame2, text='Select directory or files', font=arial20)
+label6.grid(row=0, column=0)
+button6 = tkk.Button(frame2, text='Select', command=get_files)
+button6.grid(row=0, column=1)
 # Textbox variable to be updated
-text5 = tk.Text(frame2)#, width=50, height=50)
+text6 = tk.Text(frame2)#, width=50, height=50)
 # Don't allow input!
-text5['state'] = 'disabled'
+text6['state'] = 'disabled'
 
-text5.grid(row=1, column=0, columnspan=2)
+text6.grid(row=1, column=0, columnspan=2)
 
 
 # Progress output label + textbox
-label6 = tkk.Label(frame2, text='Processing output: ', font=arial20)
-label6.grid(row=2, column=0, columnspan=2)
-text6 = tk.Text(frame2)
-text6['state'] = 'disabled'
-text6.grid(row=3, column=0, columnspan=2)
+label7 = tkk.Label(frame2, text='Processing output: ', font=arial20)
+label7.grid(row=2, column=0, columnspan=2)
+text7 = tk.Text(frame2)
+text7['state'] = 'disabled'
+text7.grid(row=3, column=0, columnspan=2)
 
 #----------------------------------------------------------
 
 # Quadrant 3 (row 1) -----------------------------------
 # Elements by #
-# 7 -> progress bar
-# 8 -> run button
+# 8 -> progress bar
+# 9 -> run button
 
 # Progress bar (spans like 4/5ths of the bottom)
-progress_bar7 = tkk.Progressbar(frame3, length=500, maximum=100, mode='determinate')
-progress_bar7.grid(column=0, columnspan=5)
+progress_bar8 = tkk.Progressbar(frame3, length=500, maximum=100, mode='determinate')
+progress_bar8.grid(column=0, columnspan=5)
 
 # Start button 
-button8 = tkk.Button(frame3, text='Start alignment', command=submit_btn)
-button8.grid(column=6)
+button9 = tkk.Button(frame3, text='Start alignment', command=submit_btn)
+button9.grid(column=6)
 
 
 
