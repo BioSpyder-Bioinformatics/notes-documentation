@@ -5,7 +5,8 @@ import argparse
 
 # THIS IS A MODIFIED VERSION OF THE CLI TOOL TEMPOSEQ_ALIGNER
 # CHANGES:
-# Removed dictionary of indexes
+# Removed dictionary of indexes 
+# Removed file list handling
 # MakeGTF is now local and so are all the reference indexes -> MakeGtf path is not set in stone anymore
 # Run aligner WILL!!!!!!! gets a buffer (list) where it keeps filling on the processes! (eg 1 file completed)
 
@@ -223,16 +224,8 @@ def run_aligner(aligner, reference_genome, input_directory, output_name, input_z
     # !!! if you move this getcwd, change the align() fn to exit the temporary directory every time as this will change otherwise and nest directories into each others 
     current_directory = input_directory or os.getcwd()
     
-    #If the user does not specify the files to include in the analysis, make an analysis on all of them
-    if specific_files == None:
-        file_list = os.listdir(current_directory)
-        # Get the list of files in the directory (either .gz if zipped or .fastq if not zipped!)
-        expected_extension = 'gz' if zipped else 'fastq'
-        # Get the file list to process discriminating based on extension
-        file_list = [file for file in file_list if file.split('.')[-1] == expected_extension]
-    else:
-        # Split the specific files by comma to get the list
-        file_list = [x for x in specific_files.split(',')]
+    # Replaces old format of inputting files
+    file_list = specific_files
 
     print('The following files will be included in the analysis: ', ', '.join(file_list))
 
@@ -241,12 +234,15 @@ def run_aligner(aligner, reference_genome, input_directory, output_name, input_z
     # For each file run alignment
     if aligner == 'star':
         for file in file_list:
+            zipped = True if file.split('.')[-1] == 'gz' else False
             temp_dir_list = align_star(file, reference_index, threads, zipped, temp_dir_list, current_directory, mismatches)
     elif aligner == 'bwa':
         for file in file_list:
+            zipped = True if file.split('.')[-1] == 'gz' else False
             temp_dir_list = align_bwa(file, reference_index, threads, zipped, temp_dir_list, current_directory)
     elif aligner == 'kallisto':
         for file in file_list:
+            zipped = True if file.split('.')[-1] == 'gz' else False
             temp_dir_list = align_kallisto(file, reference_index, threads, zipped, temp_dir_list, current_directory)
     else:
         raise Exception('Aligner not recognised')

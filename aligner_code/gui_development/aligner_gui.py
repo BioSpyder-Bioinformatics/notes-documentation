@@ -3,6 +3,7 @@ import tkinter.ttk as tkk
 import tkinter.font as tkFont
 from tkinter.filedialog import askopenfilenames, askdirectory
 from mock_functions import mock_output
+from temposeq_aligner import run_aligner
 import threading
 import io
 import os
@@ -59,6 +60,20 @@ def update_output(process, buffer, files):
         time.sleep(1)
 
 
+
+def get_files():
+    # Connected to button, prompts the user to get the files
+    var = askopenfilenames()# or askdirectory() 
+    # Format text to display nicely
+    text = ' \n'.join([x for x in var])
+    # Enable editing of text5
+    text5['state'] = 'normal'
+    # Set new text5 (1.0 is starting row 1, column 0; up to tk.END (end of text); text to set)
+    text5.replace('1.0', tk.END, text)
+    # Disable editing
+    text5['state'] = 'disabled'
+
+
 # Main function controlling everything
 def submit_btn():
     # Retrieve variables 
@@ -78,13 +93,21 @@ def submit_btn():
     # Number of threads
     threads = variable4.get()
     
+    # Output name
+    output_name = 'Standard'
+
+    # Input zipped
+    # This is really a placeholder, not used anywhere
+    zipped = None
+
+
     # Get files from files output (in string format)
     files_text = text5.get('1.0', tk.END)
     # Format strings
     files = files_text.split('\n')
     files = [file.strip() for file in files if file != ''] # strip spaces and remove empty files
     print(files)
-    
+
     # Set communicating output box (This probably is best removing and replacing )
     # output_label = tkk.Label(frame3, text='Empty')
     # # Assign it
@@ -103,6 +126,12 @@ def submit_btn():
         text6['state'] = 'disabled'
 
 
+    # Get directory where files are, and remove relative path from file names (from first file only)
+    files_directory = files[0].removesuffix(os.path.basename(files[0]))
+
+    # Get list of file names only
+    filenames = [os.path.basename(file) for file in files]
+
 
     # Declare string buffer to capture stdout
     buffer = [] #io.StringIO()
@@ -112,6 +141,9 @@ def submit_btn():
     # Before sending the function, determine if files are zipped or not!
     process = threading.Thread(target=mock_output, args=[files, buffer]) # Need to give a buffer to append output to
     # This in a try catch?? catch displays error message!
+    
+    run_aligner(aligner, reference_genome, files_directory, output_name, zipped, threads, filenames, mismatches)
+    
     process.start()
 
     # Also so the window does not freeze, updates the output separately
@@ -121,17 +153,7 @@ def submit_btn():
 
 
 
-def get_directory_or_files():
-    # Connected to button, prompts the user to get the files
-    var = askopenfilenames()# or askdirectory() 
-    # Format text to display nicely
-    text = ' \n'.join([x for x in var])
-    # Enable editing of text5
-    text5['state'] = 'normal'
-    # Set new text5 (1.0 is starting row 1, column 0; up to tk.END (end of text); text to set)
-    text5.replace('1.0', tk.END, text)
-    # Disable editing
-    text5['state'] = 'disabled'
+
     
 
 
@@ -230,7 +252,7 @@ spinbox4.grid(row=7)
 # Select files label + button + textbox 
 label5 = tkk.Label(frame2, text='Select directory or files', font=arial20)
 label5.grid(row=0, column=0)
-button5 = tkk.Button(frame2, text='Select', command=get_directory_or_files)
+button5 = tkk.Button(frame2, text='Select', command=get_files)
 button5.grid(row=0, column=1)
 # Textbox variable to be updated
 text5 = tk.Text(frame2)#, width=50, height=50)
