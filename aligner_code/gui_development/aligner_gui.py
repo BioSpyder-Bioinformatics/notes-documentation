@@ -10,7 +10,6 @@ def submit_btn():
     print('hello', variable1.get(), variable2.get(), variable3.get(), variable4.get())
 
 
-
 ########################
 
 
@@ -34,7 +33,7 @@ arial15 = tkFont.Font(family='Arial', size=15)
 
 
 # Declare frames and assign them to grid!
-frame1 = tk.LabelFrame(window, height=680, width=600, bg='red', padx=170, pady=230) # Play around with padding n stuff
+frame1 = tk.LabelFrame(window, height=680, width=600, bg='red', padx=100, pady=200) # Play around with padding n stuff
 frame1.grid(row=0, column=0)
 # frame1.configure(padding=5, borderwidth=2, relief='solid')
 
@@ -64,24 +63,26 @@ dropdown1.grid(row=1)
 
 # Select aligner label + dropdown
 aligner_options = ['star', 'bwa', 'kallisto']
-label2 = tkk.Label(frame1, text='Select aligner')
+label2 = tkk.Label(frame1, text='Select aligner', font=arial20)
 label2.grid(row=2)
 # Selected aligner variable
-variable2 = tk.StringVar(frame1)
-dropdown2 = tkk.OptionMenu(frame1, variable2, aligner_options[0], *aligner_options)
+variable2 = tk.StringVar(frame1, aligner_options[0])
+dropdown2 = tk.OptionMenu(frame1, variable2, *aligner_options)
+dropdown2.config(font=arial15, justify='center', width=20)
 dropdown2.grid(row=3)
 
 # Select number mismatches label + dropdown (star only)
 mismatches_options = ['0', '1', '2', '3']
-label3 = tkk.Label(frame1, text='Select number of mismatches (STAR only)')
+label3 = tkk.Label(frame1, text='Select number of mismatches (STAR only)', font=arial20)
 label3.grid(row=4)
 # Mismatches variable
-variable3 = tk.StringVar(frame1)
-dropdown3 = tkk.OptionMenu(frame1, variable2, mismatches_options[2], *mismatches_options)
+variable3 = tk.StringVar(frame1, mismatches_options[2])
+dropdown3 = tk.OptionMenu(frame1, variable3, *mismatches_options)
+dropdown3.config(font=arial15, justify='center', width=20)
 dropdown3.grid(row=5)
 
 # Select number of threads label + spinbox
-label4 = tkk.Label(frame1, text='Select the number of threads')
+label4 = tkk.Label(frame1, text='Select the number of threads', font=arial20)
 label4.grid(row=6)
 # Threads variable
 variable4 = tk.StringVar(frame1, value=8)
@@ -97,7 +98,7 @@ spinbox4.grid(row=7)
 # 6 -> progress output#
 
 # Select files label + button + textbox 
-label5 = tkk.Label(frame2, text='Select directory or files')
+label5 = tkk.Label(frame2, text='Select directory or files', font=arial20)
 label5.grid(row=0, column=0)
 button5 = tkk.Button(frame2, text='Select')
 button5.grid(row=0, column=1)
@@ -107,7 +108,7 @@ text5.grid(row=1, column=0, columnspan=2)
 
 
 # Progress output label + textbox
-label6 = tkk.Label(frame2, text='Processing output: ')
+label6 = tkk.Label(frame2, text='Processing output: ', font=arial20)
 label6.grid(row=2, column=0, columnspan=2)
 text6 = tk.Text(frame2)
 text6['state'] = 'disabled'
