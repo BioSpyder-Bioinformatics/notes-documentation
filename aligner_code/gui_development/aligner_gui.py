@@ -1,5 +1,6 @@
 import tkinter as tk
 import tkinter.ttk as tkk
+import tkinter.font as tkFont
 
 ########################
 # Functions
@@ -27,6 +28,11 @@ window.title("TempoSeq Aligner")
 window.geometry("1200x800") #width x height
 
 
+# Set up font objects
+arial20 = tkFont.Font(family='Arial', size=20)
+arial15 = tkFont.Font(family='Arial', size=15)
+
+
 # Declare frames and assign them to grid!
 frame1 = tk.LabelFrame(window, height=680, width=600, bg='red', padx=170, pady=230) # Play around with padding n stuff
 frame1.grid(row=0, column=0)
@@ -48,11 +54,12 @@ frame3.grid(row=1, column=0, columnspan=2)
 
 # Reference genome label + dropdown
 genome_options = ['rat_w_1.0', 'human_s1500_1.2', 'human_w_2.0', 'human_w_2.1', 'mouse_s1500_1.2', 'mouse_w_1.0']
-label1 = tkk.Label(frame1, text='Select reference genome')
+label1 = tkk.Label(frame1, text='Select reference genome', font=arial20)
 label1.grid(row=0)
 # reference genome variable
-variable1 = tk.StringVar(frame1) 
-dropdown1 = tkk.OptionMenu(frame1, variable1, genome_options[0],*genome_options)
+variable1 = tk.StringVar(frame1, genome_options[0]) 
+dropdown1 = tk.OptionMenu(frame1, variable1, *genome_options)
+dropdown1.config(font=arial15, justify='center', width=20)
 dropdown1.grid(row=1)
 
 # Select aligner label + dropdown
