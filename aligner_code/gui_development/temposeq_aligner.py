@@ -5,7 +5,10 @@ import argparse
 
 # THIS IS A MODIFIED VERSION OF THE CLI TOOL TEMPOSEQ_ALIGNER
 # CHANGES:
-# 
+# Removed dictionary of indexes
+# MakeGTF is now local and so are all the reference indexes -> Make script get where makeGtf file is at based on reference index place
+# Run aligner WILL!!!!!!! gets a buffer (list) where it keeps filling on the processes! (eg 1 file completed)
+
 
 
 # Perform alignment with aligner STAR
@@ -197,22 +200,8 @@ def append_to_df(append_to, df, aligner, filename = None):
 
 
 def run_aligner(aligner, reference_genome, input_directory, output_name, input_zipped=None, threads=8, specific_files=None, mismatches=2):
-
-    # Capture reference genome path (in kevin)
-    index_reference_dict = {
-        'rat_w_1.0': '/home/gioele/bwaIndices/TempO-Seq_Rat_Whole_Transcriptome_1.0.fa',
-        'human_s1500_1.2':'/home/gioele/bwaIndices/TempO-Seq_Human_S1500+_Surrogate_1.2.fa',
-        'human_w_2.0': '/home/gioele/bwaIndices/TempO-Seq_Human_Whole_Transcriptome_2.0_ManifestV2.fa',
-        'human_w_2.1': '/home/gioele/bwaIndices/TempO-Seq_Human_Whole_Transcriptome_2.1.fa',
-        'mouse_s1500_1.2':'/home/gioele/bwaIndices/TempO-Seq_Mouse_S1500+_Surrogate_1.2.fa',
-        'mouse_w_1.0': '/home/gioele/bwaIndices/TempO-Seq_Mouse_Whole_Transcriptome_1.0.fa'
-    } 
-
-    #Get the path to .fa of reference. If the user selection is in the key of the dict, that path is used, else it is assumed the user gave the complete path to their genome of reference
-    if reference_genome in index_reference_dict.keys():
-        reference_index = index_reference_dict[reference_genome]
-    else: 
-        reference_index = reference_genome
+    # Reassign variable to comply to old behaviour
+    reference_index = reference_genome
   
     # Are the input fastq zipped? (default true)
     zipped = input_zipped or True

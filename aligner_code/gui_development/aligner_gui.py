@@ -5,10 +5,34 @@ from tkinter.filedialog import askopenfilenames, askdirectory
 from mock_functions import mock_output
 import threading
 import io
+import os
 import time
+
+# For guide:
+# - All files have to have the same format! (eg fastq or fastq.gz)
+
 
 ########################
 # Functions
+def get_reference_list():
+    #this_dir = os.getcwd()
+    # Get path of this file
+    this_file = os.path.realpath(__file__)
+    # From file path get relative directory
+    this_dir = this_file.removesuffix('aligner_gui.py')
+    files = os.listdir(f'{this_dir}references/')
+    files = [file.removesuffix('.fa').removeprefix('TempO-Seq_') for file in files if file.split('.')[-1] == 'fa']
+    return files
+
+def get_path_from_reference(reference):
+    # Get path of this file
+    this_file = os.path.realpath(__file__)
+    # From file path get relative directory
+    this_dir = this_file.removesuffix('aligner_gui.py')
+    return_path = f'{this_dir}references/TempO-Seq_{reference}.fa'
+    return return_path
+
+
 def update_output(process, buffer, files):
     # Number of completed files
     total_completed = 0
@@ -35,19 +59,33 @@ def update_output(process, buffer, files):
         time.sleep(1)
 
 
+# Main function controlling everything
 def submit_btn():
     # Retrieve variables 
+    # Reference genome
     reference_genome = variable1.get()
+    # Get actual path to genome
+    reference_genome = get_path_from_reference(reference_genome)
+    
+    # Aligner
     aligner = variable2.get()
+    # Make aligner lowercase!
+    aligner = aligner.lower()
+
+    # Number of mismatches
     mismatches = variable3.get()
+
+    # Number of threads
     threads = variable4.get()
-    # Get files from files output
+    
+    # Get files from files output (in string format)
     files_text = text5.get('1.0', tk.END)
     # Format strings
     files = files_text.split('\n')
-    files = [file.strip() for file in files if file != '']
+    files = [file.strip() for file in files if file != ''] # strip spaces and remove empty files
     print(files)
-    # Set communicating output box
+    
+    # Set communicating output box (This probably is best removing and replacing )
     output_label = tkk.Label(frame3, text='Empty')
     # Assign it
     output_label.grid(row=4)
@@ -57,13 +95,15 @@ def submit_btn():
 
     # This is so the window does not freeze
     #mock_output(files)
+    # Before sending the function, determine if files are zipped or not!
     process = threading.Thread(target=mock_output, args=[files, buffer]) # Need to give a buffer to append output to
+    # This in a try catch?? catch displays error message!
     process.start()
 
     # Also so the window does not freeze, updates the output separately
     threading.Thread(target=update_output, args=[process, buffer, files]).start()
 
-    print('hello', variable1.get(), variable2.get(), variable3.get(), variable4.get(), text5.get('1.0', tk.END))
+    print('hello', reference_genome, aligner)
 
 
 
@@ -82,7 +122,7 @@ def get_directory_or_files():
 
 
 
-    
+
 
 
 ########################
@@ -127,17 +167,18 @@ frame3.grid(row=1, column=0, columnspan=2)
 # 4 -> select n threads 
 
 # Reference genome label + dropdown
-genome_options = ['rat_w_1.0', 'human_s1500_1.2', 'human_w_2.0', 'human_w_2.1', 'mouse_s1500_1.2', 'mouse_w_1.0']
+#genome_options = ['rat_w_1.0', 'human_s1500_1.2', 'human_w_2.0', 'human_w_2.1', 'mouse_s1500_1.2', 'mouse_w_1.0']
+genome_options = get_reference_list()
 label1 = tkk.Label(frame1, text='Select reference genome', font=arial20)
 label1.grid(row=0)
 # reference genome variable
 variable1 = tk.StringVar(frame1, genome_options[0]) 
 dropdown1 = tk.OptionMenu(frame1, variable1, *genome_options)
-dropdown1.config(font=arial15, justify='center', width=20)
+dropdown1.config(font=arial15, justify='center', width=35)
 dropdown1.grid(row=1)
 
 # Select aligner label + dropdown
-aligner_options = ['star', 'bwa', 'kallisto']
+aligner_options = ['STAR', 'BWA', 'Kallisto']
 label2 = tkk.Label(frame1, text='Select aligner', font=arial20)
 label2.grid(row=2)
 # Selected aligner variable
