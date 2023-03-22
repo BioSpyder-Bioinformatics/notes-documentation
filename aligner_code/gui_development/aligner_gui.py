@@ -207,8 +207,11 @@ progress_bar7.grid(column=0, columnspan=5)
 button8 = tkk.Button(frame3, text='Start alignment', command=submit_btn)
 button8.grid(column=6)
 
-# Start loop 
-window.mainloop()
+
+
+if __name__ == '__main__':
+    # Start loop 
+    window.mainloop()
 
 
 
