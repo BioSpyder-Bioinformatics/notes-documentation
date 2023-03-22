@@ -19,7 +19,7 @@ def get_reference_list():
     # Get path of this file
     this_file = os.path.realpath(__file__)
     # From file path get relative directory
-    this_dir = this_file.removesuffix('aligner_gui.py')
+    this_dir = this_file.removesuffix(os.path.basename(this_file)) # removes this filename from path
     files = os.listdir(f'{this_dir}references/')
     files = [file.removesuffix('.fa').removeprefix('TempO-Seq_') for file in files if file.split('.')[-1] == 'fa']
     return files
@@ -86,9 +86,23 @@ def submit_btn():
     print(files)
     
     # Set communicating output box (This probably is best removing and replacing )
-    output_label = tkk.Label(frame3, text='Empty')
-    # Assign it
-    output_label.grid(row=4)
+    # output_label = tkk.Label(frame3, text='Empty')
+    # # Assign it
+    # output_label.grid(row=4)
+
+    # If there are no files, let the user know that you need at least one!!
+    if len(files) < 1 :
+        text6['state'] = 'normal'
+        text6.replace('1.0', tk.END, 'Please select at least one file to start!')
+        text6['state'] = 'disabled'
+        return
+    else:
+        # Clean up text6 
+        text6['state'] = 'normal'
+        text6.replace('1.0', tk.END, '')
+        text6['state'] = 'disabled'
+
+
 
     # Declare string buffer to capture stdout
     buffer = [] #io.StringIO()

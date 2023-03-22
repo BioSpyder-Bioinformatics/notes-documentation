@@ -6,13 +6,19 @@ import argparse
 # THIS IS A MODIFIED VERSION OF THE CLI TOOL TEMPOSEQ_ALIGNER
 # CHANGES:
 # Removed dictionary of indexes
-# MakeGTF is now local and so are all the reference indexes -> Make script get where makeGtf file is at based on reference index place
+# MakeGTF is now local and so are all the reference indexes -> MakeGtf path is not set in stone anymore
 # Run aligner WILL!!!!!!! gets a buffer (list) where it keeps filling on the processes! (eg 1 file completed)
 
 
 
 # Perform alignment with aligner STAR
 def align_star(filename, reference_index, threads, zipped, temp_dir_list, current_directory, mismatches):
+    # Find makeGtf script's dir from this script's directory (which is the same!)
+    # Get path of this file
+    this_file = os.path.realpath(__file__)
+    # From file path get relative directory
+    make_gtf_dir = this_file.removesuffix(os.path.basename(this_file))
+
     # Get temporary name to make a directory (filename without extension)
     temp_name = filename.split('.')[0]
     # how is the temporary directory called
@@ -28,7 +34,7 @@ def align_star(filename, reference_index, threads, zipped, temp_dir_list, curren
     os.chdir(f'{current_directory}/{temp_dir}')
     
     # Make GTF reference (script is in the folder alignment_scripts in gio's home) #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! The script is only on Alpha
-    subprocess.Popen(f'python /home/gioele/alignment_scripts/makeGtf.py {reference_index} > input.gtf', shell=True).wait()
+    subprocess.Popen(f'python {make_gtf_dir}makeGtf.py {reference_index} > input.gtf', shell=True).wait()
 
     # Make Hash Table
     subprocess.Popen(f'STAR --runMode genomeGenerate --runThreadN {threads} --genomeDir {current_directory}/{temp_dir}/ --genomeFastaFiles {reference_index} --genomeSAindexNbases 4 --sjdbGTFfile input.gtf --sjdbGTFfeatureExon exon', shell=True).wait()
@@ -64,6 +70,13 @@ def align_star(filename, reference_index, threads, zipped, temp_dir_list, curren
 def align_bwa(filename, reference_index, threads, zipped, temp_dir_list, current_directory):
     print('Starting', filename)
 
+    # Find makeGtf script's dir from this script's directory (which is the same!)
+    # Get path of this file
+    this_file = os.path.realpath(__file__)
+    # From file path get relative directory
+    make_gtf_dir = this_file.removesuffix(os.path.basename(this_file))
+
+
     # Get temporary name to make a directory (filename without extension)
     temp_name = filename.split('.')[0]
     # how is the temporary directory called
@@ -80,7 +93,7 @@ def align_bwa(filename, reference_index, threads, zipped, temp_dir_list, current
     
     # Make GTF reference (script is in the folder alignment_scripts in gio's home)
     #!!!!!!!!!!!!!! makeGtf only on alpha
-    subprocess.Popen(f'python /home/gioele/alignment_scripts/makeGtf.py {reference_index} > {current_directory}/{temp_dir}/input.gtf', shell=True).wait()
+    subprocess.Popen(f'python {make_gtf_dir}makeGtf.py {reference_index} > {current_directory}/{temp_dir}/input.gtf', shell=True).wait()
 
     #make bwa index
     subprocess.Popen(f'bwa index {reference_index}', shell=True).wait()
