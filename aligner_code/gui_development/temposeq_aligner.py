@@ -32,26 +32,26 @@ def align_star(filename, reference_index, threads, zipped, temp_dir_list, curren
     temp_dir_list.append(temp_dir)
 
     # Make temporary directory 
-    os.mkdir(f'{current_directory}/{temp_dir}/')
+    os.mkdir(fr'{current_directory}/{temp_dir}/')
     # Copy fastq file in directory
-    subprocess.Popen(f'cp {current_directory}/{filename} {current_directory}/{temp_dir}', shell=True).wait()
+    subprocess.Popen(f'cp "{current_directory}/{filename}" "{current_directory}/{temp_dir}"', shell=True).wait()
     # Move into temporary directory
-    os.chdir(f'{current_directory}/{temp_dir}')
+    os.chdir(fr'{current_directory}/{temp_dir}')
     
     # Make GTF reference (script is in the folder alignment_scripts in gio's home) #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! The script is only on Alpha
-    subprocess.Popen(f'python {make_gtf_dir}makeGtf.py {reference_index} > input.gtf', shell=True).wait()
+    subprocess.Popen(f'python "{make_gtf_dir}makeGtf.py" "{reference_index}" > input.gtf', shell=True).wait()
 
     # Make Hash Table
-    subprocess.Popen(f'STAR --runMode genomeGenerate --runThreadN {threads} --genomeDir {current_directory}/{temp_dir}/ --genomeFastaFiles {reference_index} --genomeSAindexNbases 4 --sjdbGTFfile input.gtf --sjdbGTFfeatureExon exon', shell=True).wait()
+    subprocess.Popen(f'STAR --runMode genomeGenerate --runThreadN {threads} --genomeDir "{current_directory}/{temp_dir}/" --genomeFastaFiles "{reference_index}" --genomeSAindexNbases 4 --sjdbGTFfile input.gtf --sjdbGTFfeatureExon exon', shell=True).wait()
 
 
     # Expand file with zcat if zipped
     if zipped:
-        subprocess.Popen(f'gunzip -c {current_directory}/{temp_dir}/{filename} > {current_directory}/{temp_dir}/{temp_name}.fastq', shell=True).wait()
+        subprocess.Popen(f'gunzip -c "{current_directory}/{temp_dir}/{filename}" > "{current_directory}/{temp_dir}/"{temp_name}.fastq', shell=True).wait()
         filename = f'{temp_name}.fastq'
 
     # Run STAR alignment
-    subprocess.Popen(f'STAR --genomeDir {current_directory}/{temp_dir}/ --readFilesIn {filename} --runThreadN {threads} --outSAMtype BAM SortedByCoordinate --scoreDelOpen -10000 --scoreInsOpen -10000 --outFilterMultimapNmax 1 --outFilterMismatchNmax {mismatches} --outSAMunmapped Within --outFileNamePrefix {temp_name}' , shell=True).wait()
+    subprocess.Popen(f'STAR --genomeDir "{current_directory}/{temp_dir}/" --readFilesIn "{filename}" --runThreadN {threads} --outSAMtype BAM SortedByCoordinate --scoreDelOpen -10000 --scoreInsOpen -10000 --outFilterMultimapNmax 1 --outFilterMismatchNmax {mismatches} --outSAMunmapped Within --outFileNamePrefix "{temp_name}"' , shell=True).wait()
     
     print('Alignment complete for file ', filename)
 
@@ -90,34 +90,34 @@ def align_bwa(filename, reference_index, threads, zipped, temp_dir_list, current
     # append it to list of temporary directories
     temp_dir_list.append(temp_dir)
     # Make temporary directory 
-    os.mkdir(f'{current_directory}/{temp_dir}/')
+    os.mkdir(fr'{current_directory}/{temp_dir}/')
     # Copy fastq file in directory
-    subprocess.Popen(f'cp {current_directory}/{filename} {current_directory}/{temp_dir}', shell=True).wait()
+    subprocess.Popen(f'cp "{current_directory}/{filename}" "{current_directory}/{temp_dir}"', shell=True).wait()
     # Move into temporary directory
-    os.chdir(f'{current_directory}/{temp_dir}')
+    os.chdir(fr'{current_directory}/{temp_dir}')
     
     # Make GTF reference (script is in the folder alignment_scripts in gio's home)
     #!!!!!!!!!!!!!! makeGtf only on alpha
-    subprocess.Popen(f'python {make_gtf_dir}makeGtf.py {reference_index} > {current_directory}/{temp_dir}/input.gtf', shell=True).wait()
+    subprocess.Popen(f'python "{make_gtf_dir}makeGtf.py" "{reference_index}" > "{current_directory}/{temp_dir}/"input.gtf', shell=True).wait()
 
     #make bwa index
-    subprocess.Popen(f'bwa index {reference_index}', shell=True).wait()
+    subprocess.Popen(f'bwa index "{reference_index}"', shell=True).wait()
 
     # Expand file with zcat if zipped
     if zipped:
-        subprocess.Popen(f'gunzip -c {current_directory}/{temp_dir}/{filename} > {current_directory}/{temp_dir}/{temp_name}.fastq', shell=True).wait()
+        subprocess.Popen(f'gunzip -c "{current_directory}/{temp_dir}/{filename}" > "{current_directory}/{temp_dir}/"{temp_name}.fastq', shell=True).wait()
         filename = f'{temp_name}.fastq'
 
     # Align with BWA
-    subprocess.Popen(f'bwa mem -v 1 -c 2 -L 100 -t {threads} {reference_index} {current_directory}/{temp_dir}/{filename} > {current_directory}/{temp_dir}/alignment.sam', shell=True).wait()
+    subprocess.Popen(f'bwa mem -v 1 -c 2 -L 100 -t {threads} "{reference_index}" "{current_directory}/{temp_dir}/"{filename} > "{current_directory}/{temp_dir}/"alignment.sam', shell=True).wait()
 
     # Convert sam to bam
-    subprocess.Popen(f'samtools view -bS {current_directory}/{temp_dir}/alignment.sam > {current_directory}/{temp_dir}/alignment.bam', shell=True).wait()
+    subprocess.Popen(f'samtools view -bS "{current_directory}/{temp_dir}/"alignment.sam > "{current_directory}/{temp_dir}/"alignment.bam', shell=True).wait()
 
     print('Alignment complete for file ', filename)
 
     # Run feature counts
-    subprocess.Popen(f'featureCounts -a {current_directory}/{temp_dir}/input.gtf -o {current_directory}/{temp_dir}/read_count.txt {current_directory}/{temp_dir}/alignment.bam', shell=True).wait()
+    subprocess.Popen(f'featureCounts -a "{current_directory}/{temp_dir}/"input.gtf -o "{current_directory}/{temp_dir}/"read_count.txt "{current_directory}/{temp_dir}/"alignment.bam', shell=True).wait()
 
     # Remove everything but read_count.txt
     # Get file list

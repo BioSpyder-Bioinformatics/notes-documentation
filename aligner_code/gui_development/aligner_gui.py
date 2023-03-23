@@ -11,6 +11,7 @@ import time
 
 # For guide:
 # - All files have to have the same format! (eg fastq or fastq.gz)
+# If you pick this uop again remember to fix the status bar with the buffer
 
 
 ########################
