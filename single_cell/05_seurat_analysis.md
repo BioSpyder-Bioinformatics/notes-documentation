@@ -276,21 +276,118 @@ saveRDS(pbmc, file = "../output/pbmc3k_final.rds")
 
 
 
+# Streamlined script
+
+```R
+library(dplyr)
+library(Seurat)
+library(patchwork)
+
+# Load the PBMC dataset
+pbmc.data <- Read10X(data.dir = "./filtered_cd3_cd19_matrix/")
+# Initialize the Seurat object with the raw (non-normalized data).
+pbmc <- CreateSeuratObject(counts = pbmc.data, project = "pbmc3k", min.cells = 3, min.features = 200)
+pbmc
+
+#------------
+
+# Check amount of features
+VlnPlot(pbmc, features = c("nFeature_RNA", "nCount_RNA"), ncol=2)
+FeatureScatter(pbmc, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")
+
+#------------
+
+# Subset the data
+pbmc <- subset(pbmc, subset = nFeature_RNA > 200 & nFeature_RNA < 2500)
+#--------------
+
+# Normalise the data
+pbmc <- NormalizeData(pbmc, normalization.method = "LogNormalize", scale.factor = 10000)
+
+# Find 2000 most variable features and plot them
+pbmc <- FindVariableFeatures(pbmc, selection.method = "vst", nfeatures = 2000)
+top10 <- head(VariableFeatures(pbmc), 10)
+
+plot1 <- VariableFeaturePlot(pbmc)
+plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
+plot1 + plot2
+
+#---------------
+
+# Scale the data
+all.genes <- rownames(pbmc)
+pbmc <- ScaleData(pbmc, features = all.genes)
+
+
+# Run PCA
+pbmc <- RunPCA(pbmc, features = VariableFeatures(object = pbmc)) #npcs=50
+# Check 5 most variable features per PC
+print(pbmc[["pca"]], dims = 1:5, nfeatures = 5)
+
+# Get PCA
+DimPlot(pbmc, reduction = "pca")
+
+#---------------
+
+# Check elbowplot
+ElbowPlot(pbmc)
+
+
+#--------------
+# Cluster cells
+pbmc <- FindNeighbors(pbmc, dims = 1:10)
+pbmc <- FindClusters(pbmc, resolution = 0.5)
+
+# Feed PCs to the UMAP Calculation
+pbmc <- RunUMAP(pbmc, dims = 1:10)
+DimPlot(pbmc, reduction = "umap")
+
+# Get 'deterministic' markers
+pbmc.markers <- FindAllMarkers(pbmc, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
+pbmc.markers %>%
+    group_by(cluster) %>%
+    slice_max(n = 2, order_by = avg_log2FC)
+
+```
+
+
+FeaturePlot(pbmc, features = c("IGHM-89466", "CD79A-87745", "MS4A1-14568", "TRAC-89080", "LAPTM5-23860", "CST7-26199", "CD1C-18380", "IL7R-3347", "CD3D-1127"))
 
 
 
 
 
 
+kawaki_markers = ['CD34', 'PPBP', 'HBB', 'MKI67', 'MS4A7', 'FCGR3A', 'CD14', 'LYZ', 'CST3', 'XCR1', 'CLEC9A', 'FCER1A', 'CD160', 'KLRC1', 'KLRD1', 'NCR1', 'NKG7', 'GNLY', 'FOXP3', 'CCR7', 'IL7R', 'CD8A', 'CD3E', 'CD38', 'MZB1', 'CD79B', 'CD79A', 'CD19', 'MS4A1', 'MS4A1']
+
+c("CD34-14176", "PPBP-24138", "HBB-33622", "MKI67-28355", "MS4A7-12103", "FCGR3A-13772", "CD14-18823", "LYZ-23572", "CST3-27071", "XCR1-10671", "CLEC9A-20989", "FCER1A-88227", "CD160-89972", "KLRC1-28394", "KLRD1-89433", "NCR1-4503", "NCR1-26566", "NKG7-23420", "GNLY-88176", "FOXP3-87523", "CCR7-89746", "IL7R-3347", "CD8A-1152", "CD3E-16113", "CD38-19506", "MZB1-11368", "CD79B-90964", "CD79A-87745", "CD19-28252", "MS4A18-33827", "MS4A1-14568")
+
+
+# you can plot raw counts as well
+VlnPlot(pbmc, features = c("CD34-14176", "PPBP-24138", "HBB-33622", "MKI67-28355", "MS4A7-12103", "FCGR3A-13772", "CD14-18823", "LYZ-23572", "CST3-27071", "XCR1-10671", "CLEC9A-20989", "FCER1A-88227", "CD160-89972", "KLRC1-28394", "KLRD1-89433", "NCR1-4503", "NCR1-26566", "NKG7-23420", "GNLY-88176", "FOXP3-87523", "CCR7-89746", "IL7R-3347", "CD8A-1152", "CD3E-16113", "CD38-19506", "MZB1-11368", "CD79B-90964", "CD79A-87745", "CD19-28252", "MS4A18-33827", "MS4A1-14568"), slot = "counts", log = TRUE)
+
+
+# To save it
+jpeg('umap_violins.jpg', height=3000, width=3000)
+# Plot what you need
+VlnPlot(pbmc, features = c("CD34-14176", "PPBP-24138", "HBB-33622", "MKI67-28355", "MS4A7-12103", "FCGR3A-13772", "CD14-18823", "LYZ-23572", "CST3-27071", "XCR1-10671", "CLEC9A-20989", "FCER1A-88227", "CD160-89972", "KLRC1-28394", "KLRD1-89433", "NCR1-4503", "NCR1-26566", "NKG7-23420", "GNLY-88176", "FOXP3-87523", "CCR7-89746", "IL7R-3347", "CD8A-1152", "CD3E-16113", "CD38-19506", "MZB1-11368", "CD79B-90964", "CD79A-87745", "CD19-28252", "MS4A18-33827", "MS4A1-14568"), slot = "counts", log = TRUE)
+dev.off()
+
+
+
+VlnPlot(pbmc, features = c('MS4A1-14568'), slot = "counts", log = TRUE)
 
 
 
 
 
 
+Standard salvo
+Rscript seurat_script.R ../../filtered_cd3_matrix 10 200 1500 5 0.1 50 0
 
-
-
+standard 10x
+Rscript ../seurat_script_modified.R ../../filtered_pbmc_no_cult_matrix 3 200 2000 10 0.5 30 0.3
+# not working!!
 
 
 

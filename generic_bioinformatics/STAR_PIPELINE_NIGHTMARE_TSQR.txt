@@ -1,0 +1,91 @@
+STAR Pipeline
+
+This pipeline got a little messy toward the end because there seems to be no way to have snakemake
+repeat a step of the pipeline (SA index). There may be some way to do it using snakemake's sub-workflows
+(https://snakemake.readthedocs.io/en/v5.1.4/snakefiles/modularization.html)
+
+R shiny app:
+    Can take multiple csv files/ref names, but must have one ref name per csv file.
+    The names are assigned to files in the order the files were selected. **May result in some user error
+    Checks that the refname is not already taken (/srv/ssrefs/RNA8Refs, RNA10Refs, or deprecatedRefs, or RDRefs!)
+        If any single refname is taken, user is notified on the app and cannot submit the job until acceptable refname is chosen
+    User must click first submit button (under refname text input) before submit job button will work
+    Moves temporary copies of user input csv files to a temp folder
+    Creates the refname folders in appropriate location (RNA8Refs, RNA10Refs, or both with symlink. RDRefs is real copy)
+    Runs genSTARtxtFiles.py:
+        Creates a txt file list of refnames and paths to csvs for snakefile to use later
+    Copies snakemake files into temp directory
+    Changes directory to temp dir and runs STARsnake.sh:
+        Currently allowed 25 cores
+        Activates miniconda snakemake environment
+        Calls STAR.snakefile:
+            ** Note that this is a snakefile, so a regular python IDE like pycharm may not recognize the syntax
+               - Pycharm does have a plugin called SnakeCharm if you would like to install that, but it isn't necessary
+            Creates fasta file from csv (kevin:/home/shiny/STARpipeline/bin/genFasta.py)
+            Creates gtf file from csv (kevin:/home/shiny/STARpipeline/bin/genGTF.py)
+            Calls runSTAR.py (kevin:/home/shiny/STARpipeline/bin/runSTAR.py):
+                Goes through an SAidx list. Generates the genome and then tries to align
+                If alignment fails (final output file missing) moves on to next SAidx and tries again
+
+Some common issues that may arise:
+    ~ Shiny needs read permissions for fasta/gtf files. If these are generated through the app, there should be no issue
+    ~ Users must input equal number of csv files and refnames
+
+
+
+
+------------------
+
+
+
+cat /home/shiny/tsqrscripts/failedAlign.sh
+#! /bin/bash
+
+#something went wrong - notify stuart
+#scp -r /srv/data/$1/"$2"_* shiny@34.212.203.202:/srv/data/$1/
+
+#if file transfers succesfully to Stuart, delete results on Kevin
+#if [[ $? == 0 ]]
+#then
+#rm -r /srv/data/$1/"$2"_*
+#fi
+
+#if alignment fails, add one aligner credit back to user's log file
+
+##get last line of align.credit file
+if [[ $1 != "rna8" ]] && [[ $1 != "rna10" ]] && [[ $1 != "rna8dev" ]]
+then
+
+#operations for temposeqr
+curr_line=$(ssh shiny@34.212.203.202 "tail -1 /srv/ssp/$1/align.credit")
+curr_credit=$(echo $curr_line | cut -d',' -f1)
+
+if [ "$curr_credit" == "UNLIMITED" ]
+then
+
+new_line="UNLIMITED, +1, UNLIMITED, Failed Alignment/Add Credit ($2)"
+else
+
+new_credit="$((curr_credit + 1))"
+new_line="$new_credit, +1, $curr_credit, Failed Alignment/Add Credit ($2)"
+fi
+
+#append align.credit file with updated values
+ssh shiny@34.212.203.202 'echo "$new_line" >> /srv/ssp/$1/align.credit'
+
+#transfer failed file to Stuart (beta_build)
+scp -r /srv/data/beta_build/$1/"$2"_failure.txt shiny@34.212.203.202:/srv/data/beta_build/$1/
+#update _alignmentParameters file with alignment status
+ssh shiny@34.212.203.202 "sed -i '/^STATUS=/ s/$/, Failed/' /srv/data/beta_build/$1/"$2"_AlignmentParameters.txt"
+
+#delete alignment directory on Stuart (alignment directory stays on Kevin for biospyder review)
+ssh shiny@34.212.203.202 "rm -r /srv/data/beta_build/$1/$2"
+
+else
+
+#transfer all results to Stuart (RNA8/RNA10)
+scp -r /srv/data/$1/"$2"_* shiny@34.212.203.202:/srv/data/$1/
+#delete alignment directory on Stuart (alignment directory stays on Kevin for biospyder review)
+ssh shiny@34.212.203.202 "rm -r /srv/data/$1/$2"
+
+fi

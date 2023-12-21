@@ -54,6 +54,11 @@
 
 - `echo`: Print text to the terminal.
 
+- `cut` -> GET slice of string using CUT
+    - cut -c startIdx-stopIdx
+    - To get a slice from the end, need to pipe it into `rev` twice eg
+        + ... | rev | cut -c 3-5 | rev
+
 
 
 ## Bash Scripting
@@ -103,6 +108,8 @@ else
     echo "$1 is less than or equal to 10"
 fi
 
+# Conditional in one line
+if [ “X” == “X” ]; then echo “1” ; echo “2” ; echo “3” ; fi
 ```
 
 
@@ -351,6 +358,10 @@ Bash provides several tools for debugging scripts, including the `set` command a
 - `set +x` inverts -x
 
 
+
+### Tricks
+Extract unmapped reads + count them + order by frequency
+```samtools view -f 4 high_mapping/high_mapping_F1082R1099Aligned.sortedByCoord.out.bam | awk '{print $10}' | uniq -c | sort -t\t -k1```
 
 
 
